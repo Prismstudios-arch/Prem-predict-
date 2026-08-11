@@ -10,16 +10,30 @@ see "Reviewer notes" for why that matters more than usual here.
 **[HARD] The Premier League name must not appear in the app name, subtitle or
 icon** (§2). It is an actively enforced trademark.
 
-| Field | Value | Limit |
-|---|---|---|
-| App name | *(decide — see §15 #1)* | 30 chars |
-| Subtitle | `You vs the model. Every gameweek.` | 30 chars |
+**There are two different names, and they are set in two different places.**
+Conflating them is the most common ASO mistake.
 
-Candidates from §1.5, all needing a trademark + availability check before you
-commit: **Gaffer** · **Verdict XI** · **Called It** · **Matchday IQ**
+| Where | Value | Limit | Set in |
+|---|---|---|---|
+| **Home screen** | `Reckon` | ~12 chars before iOS truncates | `app.json` → `expo.name` |
+| **App Store listing** | `Reckon: Football Predictions` | 30 chars (28 used) | App Store Connect |
+| **Subtitle** | `You vs the model. Every gameweek.` | 30 chars | App Store Connect |
+
+The home-screen name must stay short. iOS truncates at roughly 12 characters,
+so `Reckon: Football Predictions` would render as `Reckon: Foo…` under the icon
+— which looks broken rather than descriptive.
+
+The App Store listing name is where length earns its keep: Apple indexes it for
+search, and it is weighted far more heavily than the keywords field. `Reckon`
+alone is unfindable by anyone who does not already know the name; **`Reckon:
+Football Predictions`** ranks for "football predictions" while still leading
+with the brand.
+
+Fallbacks if the name is taken at reservation: **Reckon FC** · **Verdict XI**
 
 Avoid entirely: Bet, Odds, Tips, Picks, Acca, Sure. These invite 5.3 scrutiny
-and push you into the gambling ASO category.
+and push you into the gambling ASO category — note how many competitors are
+called "Football Prediction & Tips" and sit in exactly that bucket.
 
 ---
 
