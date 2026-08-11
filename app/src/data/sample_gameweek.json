@@ -1,0 +1,1468 @@
+{
+  "season": "2026-27",
+  "gameweek": 1,
+  "generated_at": "2026-08-10T21:57:27.266375+00:00",
+  "model_version": "dc-elo-v1",
+  "fixtures": [
+    {
+      "id": "sample-00",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-21T19:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "afc-bournemouth",
+        "name": "Afc Bournemouth",
+        "short_name": "BOU",
+        "primary_color": "#DA291C",
+        "secondary_color": "#000000"
+      },
+      "away_team": {
+        "slug": "arsenal",
+        "name": "Arsenal",
+        "short_name": "ARS",
+        "primary_color": "#EF0107",
+        "secondary_color": "#FFFFFF"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.279,
+        "p_draw": 0.2745,
+        "p_away": 0.4465,
+        "exp_home_goals": 0.92,
+        "exp_away_goals": 1.633,
+        "p_btts": 0.4957,
+        "p_over_25": 0.47,
+        "p_home_cs": 0.195,
+        "p_away_cs": 0.3986,
+        "confidence": 0.304,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.0893,
+            0.11551,
+            0.10388,
+            0.05661,
+            0.02314,
+            0.00757,
+            0.00206,
+            0.00048
+          ],
+          [
+            0.05993,
+            0.12848,
+            0.09556,
+            0.05208,
+            0.02129,
+            0.00696,
+            0.0019,
+            0.00044
+          ],
+          [
+            0.03289,
+            0.05377,
+            0.04396,
+            0.02395,
+            0.00979,
+            0.0032,
+            0.00087,
+            0.0002
+          ],
+          [
+            0.01009,
+            0.01649,
+            0.01348,
+            0.00735,
+            0.003,
+            0.00098,
+            0.00027,
+            6e-05
+          ],
+          [
+            0.00232,
+            0.00379,
+            0.0031,
+            0.00169,
+            0.00069,
+            0.00023,
+            6e-05,
+            1e-05
+          ],
+          [
+            0.00043,
+            0.0007,
+            0.00057,
+            0.00031,
+            0.00013,
+            4e-05,
+            1e-05,
+            0.0
+          ],
+          [
+            7e-05,
+            0.00011,
+            9e-05,
+            5e-05,
+            2e-05,
+            1e-05,
+            0.0,
+            0.0
+          ],
+          [
+            1e-05,
+            1e-05,
+            1e-05,
+            1e-05,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1285
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "p": 0.1155
+          },
+          {
+            "home": 0,
+            "away": 2,
+            "p": 0.1039
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "p": 0.0956
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "p": 0.0893
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-01",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-21T22:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "aston-villa",
+        "name": "Aston Villa",
+        "short_name": "ASV",
+        "primary_color": "#95BFE5",
+        "secondary_color": "#670E36"
+      },
+      "away_team": {
+        "slug": "brentford",
+        "name": "Brentford",
+        "short_name": "BRE",
+        "primary_color": "#E30613",
+        "secondary_color": "#FBB800"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.4842,
+        "p_draw": 0.2644,
+        "p_away": 0.2514,
+        "exp_home_goals": 1.674,
+        "exp_away_goals": 1.315,
+        "p_btts": 0.6058,
+        "p_over_25": 0.575,
+        "p_home_cs": 0.2683,
+        "p_away_cs": 0.1871,
+        "confidence": 0.307,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.06114,
+            0.05507,
+            0.04345,
+            0.01906,
+            0.00627,
+            0.00165,
+            0.00036,
+            7e-05
+          ],
+          [
+            0.07318,
+            0.12168,
+            0.07285,
+            0.03195,
+            0.01051,
+            0.00277,
+            0.00061,
+            0.00011
+          ],
+          [
+            0.07053,
+            0.09281,
+            0.06107,
+            0.02679,
+            0.00881,
+            0.00232,
+            0.00051,
+            0.0001
+          ],
+          [
+            0.03942,
+            0.05187,
+            0.03413,
+            0.01497,
+            0.00492,
+            0.0013,
+            0.00028,
+            5e-05
+          ],
+          [
+            0.01652,
+            0.02174,
+            0.01431,
+            0.00627,
+            0.00206,
+            0.00054,
+            0.00012,
+            2e-05
+          ],
+          [
+            0.00554,
+            0.00729,
+            0.0048,
+            0.0021,
+            0.00069,
+            0.00018,
+            4e-05,
+            1e-05
+          ],
+          [
+            0.00155,
+            0.00204,
+            0.00134,
+            0.00059,
+            0.00019,
+            5e-05,
+            1e-05,
+            0.0
+          ],
+          [
+            0.00037,
+            0.00049,
+            0.00032,
+            0.00014,
+            5e-05,
+            1e-05,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1217
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.0928
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "p": 0.0732
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "p": 0.0728
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "p": 0.0705
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-02",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-22T01:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "brighton-and-hove-albion",
+        "name": "Brighton And Hove Albion",
+        "short_name": "BHA",
+        "primary_color": "#0057B8",
+        "secondary_color": "#FFCD00"
+      },
+      "away_team": {
+        "slug": "burnley",
+        "name": "Burnley",
+        "short_name": "BUR",
+        "primary_color": "#6C1D45",
+        "secondary_color": "#99D6EA"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.657,
+        "p_draw": 0.2033,
+        "p_away": 0.1397,
+        "exp_home_goals": 2.139,
+        "exp_away_goals": 0.878,
+        "p_btts": 0.5252,
+        "p_over_25": 0.5822,
+        "p_home_cs": 0.4157,
+        "p_away_cs": 0.1167,
+        "confidence": 0.331,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.05759,
+            0.03354,
+            0.0187,
+            0.00547,
+            0.0012,
+            0.00021,
+            3e-05,
+            0.0
+          ],
+          [
+            0.09524,
+            0.10064,
+            0.04019,
+            0.01176,
+            0.00258,
+            0.00045,
+            7e-05,
+            1e-05
+          ],
+          [
+            0.1121,
+            0.09841,
+            0.0432,
+            0.01264,
+            0.00277,
+            0.00049,
+            7e-05,
+            1e-05
+          ],
+          [
+            0.08032,
+            0.07051,
+            0.03095,
+            0.00906,
+            0.00199,
+            0.00035,
+            5e-05,
+            1e-05
+          ],
+          [
+            0.04316,
+            0.03789,
+            0.01663,
+            0.00487,
+            0.00107,
+            0.00019,
+            3e-05,
+            0.0
+          ],
+          [
+            0.01856,
+            0.01629,
+            0.00715,
+            0.00209,
+            0.00046,
+            8e-05,
+            1e-05,
+            0.0
+          ],
+          [
+            0.00665,
+            0.00584,
+            0.00256,
+            0.00075,
+            0.00016,
+            3e-05,
+            0.0,
+            0.0
+          ],
+          [
+            0.00204,
+            0.00179,
+            0.00079,
+            0.00023,
+            5e-05,
+            1e-05,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 2,
+            "away": 0,
+            "p": 0.1121
+          },
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1006
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.0984
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "p": 0.0952
+          },
+          {
+            "home": 3,
+            "away": 0,
+            "p": 0.0803
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-03",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-22T04:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "chelsea",
+        "name": "Chelsea",
+        "short_name": "CHE",
+        "primary_color": "#034694",
+        "secondary_color": "#FFFFFF"
+      },
+      "away_team": {
+        "slug": "crystal-palace",
+        "name": "Crystal Palace",
+        "short_name": "CRP",
+        "primary_color": "#1B458F",
+        "secondary_color": "#C4122E"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.4828,
+        "p_draw": 0.2665,
+        "p_away": 0.2507,
+        "exp_home_goals": 1.646,
+        "exp_away_goals": 1.061,
+        "p_btts": 0.5397,
+        "p_over_25": 0.5086,
+        "p_home_cs": 0.346,
+        "p_away_cs": 0.1924,
+        "confidence": 0.307,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.07811,
+            0.05913,
+            0.03749,
+            0.01326,
+            0.00352,
+            0.00075,
+            0.00013,
+            2e-05
+          ],
+          [
+            0.09822,
+            0.12801,
+            0.06181,
+            0.02186,
+            0.0058,
+            0.00123,
+            0.00022,
+            3e-05
+          ],
+          [
+            0.09046,
+            0.096,
+            0.05094,
+            0.01802,
+            0.00478,
+            0.00101,
+            0.00018,
+            3e-05
+          ],
+          [
+            0.04971,
+            0.05275,
+            0.02799,
+            0.0099,
+            0.00263,
+            0.00056,
+            0.0001,
+            1e-05
+          ],
+          [
+            0.02048,
+            0.02174,
+            0.01154,
+            0.00408,
+            0.00108,
+            0.00023,
+            4e-05,
+            1e-05
+          ],
+          [
+            0.00675,
+            0.00717,
+            0.0038,
+            0.00135,
+            0.00036,
+            8e-05,
+            1e-05,
+            0.0
+          ],
+          [
+            0.00186,
+            0.00197,
+            0.00104,
+            0.00037,
+            0.0001,
+            2e-05,
+            0.0,
+            0.0
+          ],
+          [
+            0.00044,
+            0.00046,
+            0.00025,
+            9e-05,
+            2e-05,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.128
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "p": 0.0982
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.096
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "p": 0.0905
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "p": 0.0781
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-04",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-22T07:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "everton",
+        "name": "Everton",
+        "short_name": "EVE",
+        "primary_color": "#003399",
+        "secondary_color": "#FFFFFF"
+      },
+      "away_team": {
+        "slug": "fulham",
+        "name": "Fulham",
+        "short_name": "FUL",
+        "primary_color": "#FFFFFF",
+        "secondary_color": "#000000"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.4278,
+        "p_draw": 0.2795,
+        "p_away": 0.2927,
+        "exp_home_goals": 1.238,
+        "exp_away_goals": 1.056,
+        "p_btts": 0.4763,
+        "p_over_25": 0.4025,
+        "p_home_cs": 0.3477,
+        "p_away_cs": 0.2899,
+        "confidence": 0.303,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.11385,
+            0.09344,
+            0.05626,
+            0.01981,
+            0.00523,
+            0.00111,
+            0.00019,
+            3e-05
+          ],
+          [
+            0.11175,
+            0.14491,
+            0.06966,
+            0.02453,
+            0.00648,
+            0.00137,
+            0.00024,
+            4e-05
+          ],
+          [
+            0.07726,
+            0.08163,
+            0.04312,
+            0.01519,
+            0.00401,
+            0.00085,
+            0.00015,
+            2e-05
+          ],
+          [
+            0.03189,
+            0.03369,
+            0.0178,
+            0.00627,
+            0.00166,
+            0.00035,
+            6e-05,
+            1e-05
+          ],
+          [
+            0.00987,
+            0.01043,
+            0.00551,
+            0.00194,
+            0.00051,
+            0.00011,
+            2e-05,
+            0.0
+          ],
+          [
+            0.00244,
+            0.00258,
+            0.00136,
+            0.00048,
+            0.00013,
+            3e-05,
+            0.0,
+            0.0
+          ],
+          [
+            0.0005,
+            0.00053,
+            0.00028,
+            0.0001,
+            3e-05,
+            1e-05,
+            0.0,
+            0.0
+          ],
+          [
+            9e-05,
+            9e-05,
+            5e-05,
+            2e-05,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1449
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "p": 0.1139
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "p": 0.1117
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "p": 0.0934
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.0816
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-05",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-22T10:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "leeds-united",
+        "name": "Leeds United",
+        "short_name": "LEE",
+        "primary_color": "#FFCD00",
+        "secondary_color": "#1D428A"
+      },
+      "away_team": {
+        "slug": "liverpool",
+        "name": "Liverpool",
+        "short_name": "LIV",
+        "primary_color": "#C8102E",
+        "secondary_color": "#00B2A9"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.254,
+        "p_draw": 0.2647,
+        "p_away": 0.4813,
+        "exp_home_goals": 1.343,
+        "exp_away_goals": 1.756,
+        "p_btts": 0.6223,
+        "p_over_25": 0.5993,
+        "p_home_cs": 0.1722,
+        "p_away_cs": 0.2609,
+        "confidence": 0.306,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.05545,
+            0.06855,
+            0.06956,
+            0.0408,
+            0.01795,
+            0.00632,
+            0.00185,
+            0.00047
+          ],
+          [
+            0.04986,
+            0.11675,
+            0.09346,
+            0.05481,
+            0.02411,
+            0.00848,
+            0.00249,
+            0.00063
+          ],
+          [
+            0.04056,
+            0.07136,
+            0.06278,
+            0.03682,
+            0.0162,
+            0.0057,
+            0.00167,
+            0.00042
+          ],
+          [
+            0.01816,
+            0.03196,
+            0.02812,
+            0.01649,
+            0.00725,
+            0.00255,
+            0.00075,
+            0.00019
+          ],
+          [
+            0.0061,
+            0.01073,
+            0.00944,
+            0.00554,
+            0.00244,
+            0.00086,
+            0.00025,
+            6e-05
+          ],
+          [
+            0.00164,
+            0.00288,
+            0.00254,
+            0.00149,
+            0.00065,
+            0.00023,
+            7e-05,
+            2e-05
+          ],
+          [
+            0.00037,
+            0.00065,
+            0.00057,
+            0.00033,
+            0.00015,
+            5e-05,
+            2e-05,
+            0.0
+          ],
+          [
+            7e-05,
+            0.00012,
+            0.00011,
+            6e-05,
+            3e-05,
+            1e-05,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1167
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "p": 0.0935
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.0714
+          },
+          {
+            "home": 0,
+            "away": 2,
+            "p": 0.0696
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "p": 0.0686
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-06",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-22T13:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "manchester-city",
+        "name": "Manchester City",
+        "short_name": "MAN",
+        "primary_color": "#6CABDD",
+        "secondary_color": "#1C2C5B"
+      },
+      "away_team": {
+        "slug": "manchester-united",
+        "name": "Manchester United",
+        "short_name": "MAN",
+        "primary_color": "#DA291C",
+        "secondary_color": "#FBE122"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.5821,
+        "p_draw": 0.2343,
+        "p_away": 0.1836,
+        "exp_home_goals": 2.067,
+        "exp_away_goals": 1.014,
+        "p_btts": 0.5667,
+        "p_over_25": 0.5961,
+        "p_home_cs": 0.3627,
+        "p_away_cs": 0.1257,
+        "confidence": 0.318,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.05507,
+            0.03673,
+            0.02344,
+            0.00792,
+            0.00201,
+            0.00041,
+            7e-05,
+            1e-05
+          ],
+          [
+            0.0851,
+            0.10544,
+            0.04865,
+            0.01645,
+            0.00417,
+            0.00085,
+            0.00014,
+            2e-05
+          ],
+          [
+            0.09817,
+            0.09956,
+            0.05049,
+            0.01707,
+            0.00433,
+            0.00088,
+            0.00015,
+            2e-05
+          ],
+          [
+            0.06792,
+            0.06888,
+            0.03493,
+            0.01181,
+            0.00299,
+            0.00061,
+            0.0001,
+            1e-05
+          ],
+          [
+            0.03524,
+            0.03574,
+            0.01813,
+            0.00613,
+            0.00155,
+            0.00032,
+            5e-05,
+            1e-05
+          ],
+          [
+            0.01463,
+            0.01484,
+            0.00752,
+            0.00254,
+            0.00064,
+            0.00013,
+            2e-05,
+            0.0
+          ],
+          [
+            0.00506,
+            0.00513,
+            0.0026,
+            0.00088,
+            0.00022,
+            5e-05,
+            1e-05,
+            0.0
+          ],
+          [
+            0.0015,
+            0.00152,
+            0.00077,
+            0.00026,
+            7e-05,
+            1e-05,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1054
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.0996
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "p": 0.0982
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "p": 0.0851
+          },
+          {
+            "home": 3,
+            "away": 1,
+            "p": 0.0689
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-07",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-22T16:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "newcastle-united",
+        "name": "Newcastle United",
+        "short_name": "NEW",
+        "primary_color": "#241F20",
+        "secondary_color": "#FFFFFF"
+      },
+      "away_team": {
+        "slug": "nottingham-forest",
+        "name": "Nottingham Forest",
+        "short_name": "NOF",
+        "primary_color": "#DD0000",
+        "secondary_color": "#FFFFFF"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.4617,
+        "p_draw": 0.2701,
+        "p_away": 0.2682,
+        "exp_home_goals": 1.636,
+        "exp_away_goals": 1.261,
+        "p_btts": 0.5886,
+        "p_over_25": 0.5537,
+        "p_home_cs": 0.2833,
+        "p_away_cs": 0.1944,
+        "confidence": 0.305,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.06636,
+            0.05821,
+            0.04381,
+            0.01842,
+            0.00581,
+            0.00146,
+            0.00031,
+            6e-05
+          ],
+          [
+            0.07897,
+            0.12507,
+            0.07176,
+            0.03017,
+            0.00951,
+            0.0024,
+            0.0005,
+            9e-05
+          ],
+          [
+            0.0739,
+            0.0932,
+            0.05877,
+            0.02471,
+            0.00779,
+            0.00196,
+            0.00041,
+            7e-05
+          ],
+          [
+            0.04035,
+            0.05089,
+            0.03209,
+            0.01349,
+            0.00425,
+            0.00107,
+            0.00023,
+            4e-05
+          ],
+          [
+            0.01652,
+            0.02084,
+            0.01314,
+            0.00552,
+            0.00174,
+            0.00044,
+            9e-05,
+            2e-05
+          ],
+          [
+            0.00541,
+            0.00683,
+            0.00431,
+            0.00181,
+            0.00057,
+            0.00014,
+            3e-05,
+            1e-05
+          ],
+          [
+            0.00148,
+            0.00186,
+            0.00118,
+            0.00049,
+            0.00016,
+            4e-05,
+            1e-05,
+            0.0
+          ],
+          [
+            0.00035,
+            0.00044,
+            0.00028,
+            0.00012,
+            4e-05,
+            1e-05,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1251
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.0932
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "p": 0.079
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "p": 0.0739
+          },
+          {
+            "home": 1,
+            "away": 2,
+            "p": 0.0718
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-08",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-22T19:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "sunderland",
+        "name": "Sunderland",
+        "short_name": "SUN",
+        "primary_color": "#EB172B",
+        "secondary_color": "#FFFFFF"
+      },
+      "away_team": {
+        "slug": "tottenham-hotspur",
+        "name": "Tottenham Hotspur",
+        "short_name": "TOH",
+        "primary_color": "#132257",
+        "secondary_color": "#FFFFFF"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.3971,
+        "p_draw": 0.2815,
+        "p_away": 0.3214,
+        "exp_home_goals": 1.403,
+        "exp_away_goals": 1.155,
+        "p_btts": 0.5292,
+        "p_over_25": 0.4712,
+        "p_home_cs": 0.3149,
+        "p_away_cs": 0.2457,
+        "confidence": 0.301,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.0898,
+            0.07698,
+            0.05165,
+            0.01989,
+            0.00575,
+            0.00133,
+            0.00026,
+            4e-05
+          ],
+          [
+            0.09619,
+            0.13793,
+            0.07251,
+            0.02793,
+            0.00807,
+            0.00186,
+            0.00036,
+            6e-05
+          ],
+          [
+            0.07623,
+            0.08809,
+            0.05089,
+            0.0196,
+            0.00566,
+            0.00131,
+            0.00025,
+            4e-05
+          ],
+          [
+            0.03567,
+            0.04122,
+            0.02381,
+            0.00917,
+            0.00265,
+            0.00061,
+            0.00012,
+            2e-05
+          ],
+          [
+            0.01252,
+            0.01446,
+            0.00836,
+            0.00322,
+            0.00093,
+            0.00021,
+            4e-05,
+            1e-05
+          ],
+          [
+            0.00351,
+            0.00406,
+            0.00235,
+            0.0009,
+            0.00026,
+            6e-05,
+            1e-05,
+            0.0
+          ],
+          [
+            0.00082,
+            0.00095,
+            0.00055,
+            0.00021,
+            6e-05,
+            1e-05,
+            0.0,
+            0.0
+          ],
+          [
+            0.00016,
+            0.00019,
+            0.00011,
+            4e-05,
+            1e-05,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1379
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "p": 0.0962
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "p": 0.0898
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.0881
+          },
+          {
+            "home": 0,
+            "away": 1,
+            "p": 0.077
+          }
+        ]
+      }
+    },
+    {
+      "id": "sample-09",
+      "gameweek": 1,
+      "kickoff_utc": "2026-08-22T22:00:00+00:00",
+      "status": "scheduled",
+      "home_team": {
+        "slug": "west-ham-united",
+        "name": "West Ham United",
+        "short_name": "WEH",
+        "primary_color": "#7A263A",
+        "secondary_color": "#1BB1E7"
+      },
+      "away_team": {
+        "slug": "wolverhampton-wanderers",
+        "name": "Wolverhampton Wanderers",
+        "short_name": "WOW",
+        "primary_color": "#FDB913",
+        "secondary_color": "#231F20"
+      },
+      "home_goals": null,
+      "away_goals": null,
+      "prediction": {
+        "p_home": 0.5171,
+        "p_draw": 0.2576,
+        "p_away": 0.2253,
+        "exp_home_goals": 1.652,
+        "exp_away_goals": 0.999,
+        "p_btts": 0.5223,
+        "p_over_25": 0.4946,
+        "p_home_cs": 0.3684,
+        "p_away_cs": 0.1913,
+        "confidence": 0.31,
+        "confidence_band": "Low",
+        "confidence_reason": "first gameweek, limited data",
+        "data_regime": "prior_heavy",
+        "scoreline_matrix": [
+          [
+            0.08199,
+            0.05884,
+            0.03514,
+            0.0117,
+            0.00292,
+            0.00058,
+            0.0001,
+            1e-05
+          ],
+          [
+            0.10504,
+            0.12794,
+            0.05813,
+            0.01935,
+            0.00483,
+            0.00096,
+            0.00016,
+            2e-05
+          ],
+          [
+            0.09642,
+            0.09629,
+            0.04808,
+            0.01601,
+            0.004,
+            0.0008,
+            0.00013,
+            2e-05
+          ],
+          [
+            0.05317,
+            0.0531,
+            0.02652,
+            0.00883,
+            0.0022,
+            0.00044,
+            7e-05,
+            1e-05
+          ],
+          [
+            0.02199,
+            0.02196,
+            0.01097,
+            0.00365,
+            0.00091,
+            0.00018,
+            3e-05,
+            0.0
+          ],
+          [
+            0.00728,
+            0.00727,
+            0.00363,
+            0.00121,
+            0.0003,
+            6e-05,
+            1e-05,
+            0.0
+          ],
+          [
+            0.00201,
+            0.002,
+            0.001,
+            0.00033,
+            8e-05,
+            2e-05,
+            0.0,
+            0.0
+          ],
+          [
+            0.00047,
+            0.00047,
+            0.00024,
+            8e-05,
+            2e-05,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "top_scorelines": [
+          {
+            "home": 1,
+            "away": 1,
+            "p": 0.1279
+          },
+          {
+            "home": 1,
+            "away": 0,
+            "p": 0.105
+          },
+          {
+            "home": 2,
+            "away": 0,
+            "p": 0.0964
+          },
+          {
+            "home": 2,
+            "away": 1,
+            "p": 0.0963
+          },
+          {
+            "home": 0,
+            "away": 0,
+            "p": 0.082
+          }
+        ]
+      }
+    }
+  ]
+}

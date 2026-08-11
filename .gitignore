@@ -1,0 +1,40 @@
+# ---- secrets (never commit) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.p8
+*.p12
+*.mobileprovision
+
+# ---- node / expo ----
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+ios/
+android/
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# ---- data caches (regenerable, large) ----
+worker/data/
+!worker/data/.gitkeep
+
+# ---- supabase local ----
+supabase/.branches/
+supabase/.temp/
+
+# ---- os / editor ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

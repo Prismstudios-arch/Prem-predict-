@@ -1,0 +1,10 @@
+{
+  "//": "Edge Functions run on Deno, not Node. This directory is deliberately outside app/tsconfig.json's include path so `npm run typecheck` does not try to compile it with Node types.",
+  "imports": {
+    "@supabase/supabase-js": "jsr:@supabase/supabase-js@2"
+  },
+  "compilerOptions": {
+    "strict": true,
+    "lib": ["deno.window", "esnext"]
+  }
+}

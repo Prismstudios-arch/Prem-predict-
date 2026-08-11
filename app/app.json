@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "Prem Predict",
+    "slug": "prem-predict",
+    "scheme": "prempredict",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "com.prempredict.app",
+      "supportsTablet": false,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false
+        },
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "//": "Routes live in src/app because the Expo project itself is the repo's app/ directory — the default ./app root would nest as app/app and read as a mistake.",
+          "root": "./src/app"
+        }
+      ],
+      "expo-secure-store",
+      "expo-apple-authentication",
+      [
+        "expo-notifications",
+        {
+          "iosDisplayInForeground": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "SET_BY_eas_init"
+      }
+    }
+  }
+}

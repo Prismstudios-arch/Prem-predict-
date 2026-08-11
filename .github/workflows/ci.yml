@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# NOTE: EAS Build is deliberately NOT wired to CI. The free tier is 15 iOS
+# builds/month (CLAUDE.md §3.2) — builds are triggered by hand, never per-PR.
+
+jobs:
+  worker:
+    name: worker (python)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: ruff check src tests
+      - run: pytest -q
+
+  app:
+    name: app (typescript)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint --if-present
+      # §7.5 is [HARD] and says "Test it." These are pure token/contrast checks
+      # that run in Node — they caught eight real contrast bugs on first run,
+      # including a stacked bar whose home and away segments were identical in
+      # greyscale.
+      - run: npm test
+
+  sql:
+    name: migrations parse
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+        ports: ['5432:5432']
+    steps:
+      - uses: actions/checkout@v4
+      # Catches syntax errors before they reach the Supabase project. The auth
+      # schema and auth.uid() are stubbed so the migrations can be applied
+      # against a vanilla Postgres image.
+      - name: Apply migrations
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 <<'SQL'
+          create schema if not exists auth;
+          create table auth.users (id uuid primary key);
+          create or replace function auth.uid() returns uuid
+            language sql stable as $$ select null::uuid $$;
+          create role anon;
+          create role authenticated;
+          SQL
+          for f in supabase/migrations/*.sql; do
+            echo "-- applying $f"
+            psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f "$f"
+          done
+
+      # The scoring rule is the one piece of logic users will argue about, and
+      # it only exists in SQL (0004_settlement.sql). Parsing proves it compiles;
+      # this proves it is correct. Runs against real Postgres because there is
+      # no way to execute PL/pgSQL anywhere else.
+      - name: Assert the scoring truth table
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          begin
+            -- exact scoreline
+            assert public.score_prediction(2,0,2,0) = 5, 'exact 2-0 should be 5';
+            assert public.score_prediction(0,0,0,0) = 5, 'exact 0-0 should be 5';
+            assert public.score_prediction(3,2,3,2) = 5, 'exact 3-2 should be 5';
+            -- right outcome, wrong score
+            assert public.score_prediction(1,0,3,0) = 2, 'home win, wrong score';
+            assert public.score_prediction(0,1,0,4) = 2, 'away win, wrong score';
+            assert public.score_prediction(1,1,2,2) = 2, 'draw, wrong score';
+            -- wrong outcome
+            assert public.score_prediction(2,0,0,2) = 0, 'inverted result';
+            assert public.score_prediction(1,1,2,0) = 0, 'draw vs home win';
+            assert public.score_prediction(2,0,1,1) = 0, 'home win vs draw';
+            -- an exact hit must never score less than a mere outcome hit
+            assert public.score_prediction(2,1,2,1) > public.score_prediction(3,1,2,1),
+                   'exact must beat outcome-only';
+          end $$;
+          SELECT 'scoring truth table OK' AS result;
+          SQL
+
+      # The crowd-vs-model divergence drives what gets shown as the weekly
+      # talking point, so it has to be right and it only exists in SQL.
+      - name: Assert the crowd/model divergence metric
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          begin
+            -- identical distributions => zero distance
+            assert public.distribution_distance(0.5,0.3,0.2, 0.5,0.3,0.2) = 0,
+                   'identical distributions must score 0';
+            -- disjoint distributions => maximum distance of 1
+            assert public.distribution_distance(1,0,0, 0,0,1) = 1,
+                   'disjoint distributions must score 1';
+            -- symmetric: neither side is privileged as "truth"
+            assert public.distribution_distance(0.7,0.2,0.1, 0.3,0.3,0.4)
+                 = public.distribution_distance(0.3,0.3,0.4, 0.7,0.2,0.1),
+                   'distance must be symmetric';
+            -- bounded 0..1 so it renders as a percentage without explanation
+            assert public.distribution_distance(0.9,0.05,0.05, 0.05,0.05,0.9) between 0 and 1,
+                   'distance must stay within 0..1';
+            -- a bigger gap must score higher
+            assert public.distribution_distance(0.8,0.1,0.1, 0.4,0.3,0.3)
+                 > public.distribution_distance(0.8,0.1,0.1, 0.7,0.15,0.15),
+                   'larger divergence must rank higher';
+            -- privacy floor is in force
+            assert public.min_crowd_sample() >= 10,
+                   'crowd sample floor must stay high enough to prevent deanonymisation';
+          end $$;
+          SELECT 'crowd divergence OK' AS result;
+          SQL
