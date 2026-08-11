@@ -5,20 +5,17 @@
   },
   "build": {
     "development": {
-      "//": "Install on your own iPhone. Needed as soon as RevenueCat, Sign in with Apple or push notifications are involved — Expo Go cannot load native modules.",
       "developmentClient": true,
       "distribution": "internal",
       "ios": { "resourceClass": "m-medium" },
       "env": { "EXPO_PUBLIC_ENV": "development" }
     },
     "preview": {
-      "//": "TestFlight-style build without submitting to the store.",
       "distribution": "internal",
       "ios": { "resourceClass": "m-medium" },
       "env": { "EXPO_PUBLIC_ENV": "preview" }
     },
     "production": {
-      "//": "App Store / TestFlight. autoIncrement avoids the 'build number already used' rejection, which otherwise costs a full rebuild from the 15/month allowance.",
       "autoIncrement": true,
       "ios": { "resourceClass": "m-medium" },
       "env": { "EXPO_PUBLIC_ENV": "production" }
@@ -27,7 +24,6 @@
   "submit": {
     "production": {
       "ios": {
-        "//": "Fill these in from App Store Connect before the first `eas submit`.",
         "appleId": "REPLACE_WITH_YOUR_APPLE_ID_EMAIL",
         "ascAppId": "REPLACE_WITH_APP_STORE_CONNECT_APP_ID",
         "appleTeamId": "REPLACE_WITH_YOUR_TEAM_ID"
