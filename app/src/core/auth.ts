@@ -23,7 +23,7 @@ import * as SecureStore from 'expo-secure-store';
 
 import { supabase } from '@/api/client';
 
-const ANON_MARKER_KEY = 'prempredict.anon_session';
+const ANON_MARKER_KEY = 'reckon.anon_session';
 
 export type AccountState = {
   userId: string | null;

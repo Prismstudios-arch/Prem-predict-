@@ -28,7 +28,7 @@ export { STALE_AFTER_MS, formatFreshness, isStale } from './freshness';
 /** Bump to discard every cached row. Cheap, by design. */
 const SCHEMA_VERSION = 1;
 
-const DB_NAME = 'prempredict-cache.db';
+const DB_NAME = 'reckon-cache.db';
 
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 

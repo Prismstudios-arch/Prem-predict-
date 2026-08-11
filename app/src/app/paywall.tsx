@@ -46,8 +46,10 @@ import {
   useType,
 } from '@/theme';
 
-const TERMS_URL = 'https://prempredict.app/terms';
-const PRIVACY_URL = 'https://prempredict.app/privacy';
+// §9.3 [HARD]: both must be live at stable URLs before submission, and
+// linked from the paywall before purchase (§8.3). Register the domain.
+const TERMS_URL = 'https://reckonfootball.app/terms';
+const PRIVACY_URL = 'https://reckonfootball.app/privacy';
 
 const PREMIUM_FEATURES = [
   'Full probability breakdown, not just the pick',

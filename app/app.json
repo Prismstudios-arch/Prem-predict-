@@ -15,7 +15,7 @@
     },
     "ios": {
       "//": "PERMANENT once an App Store Connect record exists. Deliberately not tied to the app name so a rename costs nothing.",
-      "bundleIdentifier": "com.prempredict.app",
+      "bundleIdentifier": "com.reckonfootball.app",
       "supportsTablet": false,
       "config": {
         "usesNonExemptEncryption": false

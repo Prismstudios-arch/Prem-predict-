@@ -22,19 +22,25 @@ be sold until it clears, and nothing about it can be rushed later.
 Do this even before deciding the app name. It blocks everything and nothing
 else depends on it.
 
-### A2. [YOU] Decide the bundle ID (~5 min, permanent)
+### A2. [YOU] Reserve the name and register the domain (~20 min)
 
-The **app name can change later. The bundle ID cannot** — once an App Store
-Connect record exists it is permanent.
+**Bundle ID is decided:** `com.reckonfootball.app`, already set in
+`app/app.json`. It was changed while no App Store Connect record existed, which
+is the only window in which that is free. **Do not change it again after
+creating the app record — it is permanent from that moment.**
 
-Pick something neutral so a rename costs nothing:
+Two things still outstanding:
 
-```
-com.<yourdomain>.gaffer
-```
+1. **Reserve "Reckon" in App Store Connect.** That is the only place that can
+   confirm the name is available, and it tells you at reservation time. Have a
+   fallback ready — *Reckon FC*, *Verdict XI*.
+2. **Register `reckonfootball.app`.** §9.3 [HARD] requires Privacy Policy and
+   Terms at stable URLs before submission, and `src/app/paywall.tsx` already
+   links to them. Host them free on GitHub Pages or Cloudflare Pages.
 
-Then set it in `app/app.json` → `expo.ios.bundleIdentifier`
-(currently the placeholder `com.prempredict.app`).
+⚠️ A web search found no football-prediction app called Reckon, but that is
+**not trademark clearance**. Reckon Ltd (Australian accounting software) holds
+marks in software classes. Worth a proper search before you spend on branding.
 
 ### A3. [YOU] Read football-data.org's terms (~15 min)
 
