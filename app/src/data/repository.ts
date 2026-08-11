@@ -13,7 +13,11 @@
 
 import { z } from 'zod';
 
-import { fetchGameweek } from '@/api/client';
+import {
+  fetchFreePredictions,
+  fetchGameweek,
+  fetchPremiumPredictions,
+} from '@/api/client';
 import { currentSeason } from './season';
 import sampleGameweek from './sample_gameweek.json';
 
@@ -45,6 +49,20 @@ export const PredictionSchema = z.object({
   ),
 });
 
+/**
+ * What a free-tier user gets (§8.1): the model's pick and how sure it is, with
+ * no probabilities behind it. Deliberately a separate type from Prediction so
+ * the UI cannot accidentally render premium fields that are not there — an
+ * unentitled response genuinely does not contain them (§9.2 [HARD]).
+ */
+export const FreePickSchema = z.object({
+  headline_pick: z.enum(['home', 'draw', 'away']),
+  confidence: z.number(),
+  confidence_band: z.string(),
+  confidence_reason: z.string(),
+  data_regime: z.enum(['prior_heavy', 'blended', 'current']),
+});
+
 export const FixtureSchema = z.object({
   id: z.string(),
   gameweek: z.number(),
@@ -55,6 +73,7 @@ export const FixtureSchema = z.object({
   home_goals: z.number().nullable(),
   away_goals: z.number().nullable(),
   prediction: PredictionSchema.nullable(),
+  free_pick: FreePickSchema.nullable().default(null),
 });
 
 export const GameweekSchema = z.object({
@@ -76,19 +95,57 @@ export function isUsingSampleData(): boolean {
   return !usingLiveBackend;
 }
 
+/** Top-N scorelines, read off the matrix the server already sent. */
+function topScorelines(matrix: number[][], k: number) {
+  const cells: { home: number; away: number; p: number }[] = [];
+  for (let h = 0; h < matrix.length; h++) {
+    const row = matrix[h] ?? [];
+    for (let a = 0; a < row.length; a++) cells.push({ home: h, away: a, p: row[a] ?? 0 });
+  }
+  return cells.sort((x, y) => y.p - x.p).slice(0, k);
+}
+
 export async function loadGameweek(gameweek: number): Promise<Gameweek> {
   if (usingLiveBackend) {
-    // Phase 3 wires predictions through the gated views; until then the live
-    // path returns fixtures only and the UI renders its designed empty state
-    // rather than inventing probabilities.
     const season = currentSeason();
     const fixtures = await fetchGameweek(season, gameweek);
+    const ids = fixtures.map((f) => f.id);
+
+    // Ask for both tiers. An unentitled caller gets [] from predictions_premium
+    // straight out of the database — not an error, simply no rows — so an empty
+    // premium result is the correct signal to fall back to the free pick.
+    const [premium, free] = await Promise.all([
+      fetchPremiumPredictions(ids),
+      fetchFreePredictions(ids),
+    ]);
+
+    const premiumById = new Map(premium.map((p) => [p.fixture_id, p]));
+    const freeById = new Map(free.map((p) => [p.fixture_id, p]));
+
     return GameweekSchema.parse({
       season,
       gameweek,
       generated_at: new Date().toISOString(),
       model_version: 'live',
-      fixtures: fixtures.map((f) => ({ ...f, prediction: null })),
+      fixtures: fixtures.map((f) => {
+        const full = premiumById.get(f.id);
+        const pick = freeById.get(f.id);
+        return {
+          ...f,
+          prediction: full
+            ? { ...full, top_scorelines: topScorelines(full.scoreline_matrix, 5) }
+            : null,
+          free_pick: pick
+            ? {
+                headline_pick: pick.headline_pick,
+                confidence: pick.confidence,
+                confidence_band: pick.confidence_band,
+                confidence_reason: pick.confidence_reason,
+                data_regime: pick.data_regime,
+              }
+            : null,
+        };
+      }),
     });
   }
 

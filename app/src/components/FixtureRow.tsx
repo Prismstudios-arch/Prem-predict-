@@ -12,6 +12,7 @@
 import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+
 import { ProbabilityBar } from './ProbabilityBar';
 import { TeamMark } from './TeamMark';
 import type { Fixture } from '@/data/repository';
@@ -111,7 +112,7 @@ function FixtureRowImpl({ fixture, onPress }: Props) {
         </Text>
       </View>
 
-      {prediction && (
+      {prediction ? (
         <ProbabilityBar
           pHome={prediction.p_home}
           pDraw={prediction.p_draw}
@@ -120,8 +121,53 @@ function FixtureRowImpl({ fixture, onPress }: Props) {
           awayLabel={away.short_name}
           height={scaled(8)}
         />
+      ) : (
+        fixture.free_pick && <FreePickRow fixture={fixture} />
       )}
     </Pressable>
+  );
+}
+
+/**
+ * The free tier (§8.1): the model's pick and how sure it is, with no
+ * probabilities behind it.
+ *
+ * This is not a degraded state to apologise for — §8.1 is explicit that free
+ * users get enough to play every week. So it states the pick plainly and notes
+ * that the split is available, rather than showing a locked padlock where the
+ * content should be. §8.3 calls for a *contextual* soft paywall: the nudge
+ * belongs on the match detail screen where the real data would appear, not
+ * nagging from every row of the list.
+ */
+function FreePickRow({ fixture }: { fixture: Fixture }) {
+  const { colors } = useTheme();
+  const type = useType();
+  const pick = fixture.free_pick;
+  if (!pick) return null;
+
+  const label =
+    pick.headline_pick === 'home'
+      ? fixture.home_team.name
+      : pick.headline_pick === 'away'
+        ? fixture.away_team.name
+        : 'Draw';
+
+  return (
+    <View
+      accessible
+      accessibilityLabel={
+        `Model leans ${label}. ${pick.confidence_band} confidence, ${pick.confidence_reason}.`
+      }
+      style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}
+    >
+      <Text style={[type.micro, { color: colors.accent }]}>MODEL</Text>
+      <Text style={[type.callout, { color: colors.textPrimary }]} numberOfLines={1}>
+        {label}
+      </Text>
+      <Text style={[type.caption, { color: colors.textTertiary, flexShrink: 1 }]}>
+        · {pick.confidence_band.toLowerCase()} confidence
+      </Text>
+    </View>
   );
 }
 

@@ -1,10 +1,33 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { ThemeProvider, palette, useTheme } from '@/theme';
+import { hasBackend } from '@/api/client';
+import { ensureSession } from '@/core/auth';
+import { ThemeProvider, useTheme } from '@/theme';
 
 export default function RootLayout() {
+  /**
+   * §6.1: "No forced signup; anonymous device account." The session is created
+   * on first launch so a user can predict immediately — a signup wall is one of
+   * the two things that kills a prediction game before it has any players.
+   *
+   * Deliberately non-fatal. If anonymous sign-in is disabled in the Supabase
+   * dashboard, or the device is offline, the app must still render the gameweek
+   * from cache rather than showing a blank screen (§10). Only the features that
+   * genuinely need an account degrade.
+   */
+  useEffect(() => {
+    if (!hasBackend()) return;
+    void ensureSession().catch((error) => {
+      console.warn(
+        'anonymous session unavailable; predictions can be viewed but not submitted.',
+        error,
+      );
+    });
+  }, []);
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>
@@ -53,5 +76,3 @@ function ThemedStack() {
 }
 
 export const unstable_settings = { initialRouteName: 'index' };
-
-export { palette };

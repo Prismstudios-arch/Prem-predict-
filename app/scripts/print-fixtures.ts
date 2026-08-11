@@ -14,7 +14,13 @@
 
 import 'dotenv/config';
 
-import { fetchGameweek, hasBackend, supabase } from '../src/api/client';
+import {
+  fetchFreePredictions,
+  fetchGameweek,
+  fetchPremiumPredictions,
+  hasBackend,
+  supabase,
+} from '../src/api/client';
 import { currentSeason } from '../src/data/season';
 
 const SEASON = process.env.SEASON ?? currentSeason();
@@ -69,19 +75,36 @@ async function main() {
     console.log('  no fixtures - run `python -m premmodel ingest` in worker/ first');
   }
 
+  // Exercise both tiers so the whole read path is proven, not just fixtures.
+  const ids = fixtures.map((f) => f.id);
+  const free = await fetchFreePredictions(ids);
+  const premium = await fetchPremiumPredictions(ids);
+  const freeById = new Map(free.map((p) => [p.fixture_id, p]));
+  const premiumById = new Map(premium.map((p) => [p.fixture_id, p]));
+
   for (const f of fixtures) {
     const right =
       f.home_goals !== null && f.away_goals !== null
         ? `${f.home_goals}-${f.away_goals}`
         : fmtKickoff(f.kickoff_utc);
+
+    const full = premiumById.get(f.id);
+    const pick = freeById.get(f.id);
+    const model = full
+      ? `${Math.round(full.p_home * 100)}/${Math.round(full.p_draw * 100)}/${Math.round(full.p_away * 100)}`
+      : pick
+        ? `${pick.headline_pick.padEnd(4)} ${pick.confidence_band}`
+        : 'no prediction';
+
     console.log(
       `  ${f.home_team.short_name.padStart(3)}  v  ${f.away_team.short_name.padEnd(3)}` +
-        `   ${right.padStart(20)}   ${f.status}`,
+        `   ${right.padStart(20)}   ${model}`,
     );
   }
 
   console.log('-'.repeat(58));
-  console.log(`  ${fixtures.length} fixtures\n`);
+  console.log(`  ${fixtures.length} fixtures`);
+  console.log(`  free picks: ${free.length}   premium rows: ${premium.length}\n`);
 
   const gated = await assertPremiumIsGated();
   console.log('');

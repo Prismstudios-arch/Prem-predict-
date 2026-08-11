@@ -1,4 +1,3 @@
-﻿/// <reference types="expo/types" />
+/// <reference types="expo/types" />
 
-// Generated-style ambient types. Provides process.env typing for the
-// EXPO_PUBLIC_* variables that Expo inlines into the bundle.
+// NOTE: This file should not be edited and should be in your git ignore
