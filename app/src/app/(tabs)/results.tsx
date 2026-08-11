@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetchMyResults, type GameweekResult } from '@/core/predictions';
 import { radius, space, tabularNumbers, useTheme, useType } from '@/theme';
@@ -23,6 +24,7 @@ type State =
 export default function ResultsScreen() {
   const { colors } = useTheme();
   const type = useType();
+  const insets = useSafeAreaInsets();
   const [state, setState] = useState<State>({ status: 'loading' });
 
   const load = useCallback(async () => {
@@ -62,7 +64,12 @@ export default function ResultsScreen() {
     <FlatList
       data={state.results}
       keyExtractor={(r) => `${r.season}-${r.gameweek}`}
-      contentContainerStyle={{ padding: space.lg, gap: space.md }}
+      contentContainerStyle={{
+        padding: space.lg,
+        paddingTop: insets.top + space.lg,
+        paddingBottom: insets.bottom + space.xxl,
+        gap: space.md,
+      }}
       ListHeaderComponent={
         state.results.length > 0 ? (
           <View style={{ gap: space.xs, marginBottom: space.sm }}>

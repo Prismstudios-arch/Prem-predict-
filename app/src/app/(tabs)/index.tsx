@@ -124,6 +124,9 @@ export default function GameweekScreen() {
       renderItem={({ item }) => <FixtureRow fixture={item} onPress={openMatch} />}
       contentContainerStyle={{
         padding: space.lg,
+        // The tab group hides the native header, so the screen owns its own
+        // top inset rather than sliding under the status bar.
+        paddingTop: insets.top + space.lg,
         paddingBottom: insets.bottom + space.xxl,
         gap: space.md,
       }}

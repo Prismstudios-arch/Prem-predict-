@@ -55,12 +55,12 @@ function ThemedStack() {
           name="onboarding"
           options={{ headerShown: false, gestureEnabled: false }}
         />
-        <Stack.Screen name="index" options={{ title: 'Gameweek' }} />
+        {/* The tab group owns its own headers. */}
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="match/[id]"
           options={{ title: 'Match', presentation: 'card' }}
         />
-        <Stack.Screen name="results" options={{ title: 'Results' }} />
         <Stack.Screen
           name="paywall"
           options={{
@@ -75,4 +75,4 @@ function ThemedStack() {
   );
 }
 
-export const unstable_settings = { initialRouteName: 'index' };
+export const unstable_settings = { initialRouteName: '(tabs)' };

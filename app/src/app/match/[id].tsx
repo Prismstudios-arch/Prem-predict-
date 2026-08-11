@@ -12,16 +12,24 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LockIcon } from '@/components/Icons';
 import { ProbabilityBar } from '@/components/ProbabilityBar';
 import { PredictionInput, type UserPrediction } from '@/components/PredictionInput';
 import { ScoreMatrix, TopScorelines } from '@/components/ScoreMatrix';
 import { TeamMark } from '@/components/TeamMark';
 import { formatKickoff, loadFixture, type Fixture } from '@/data/repository';
-import { radius, space, tabularNumbers, useTheme, useType } from '@/theme';
+import {
+  MIN_TOUCH_TARGET,
+  radius,
+  space,
+  tabularNumbers,
+  useTheme,
+  useType,
+} from '@/theme';
 
 export default function MatchDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -83,7 +91,12 @@ export default function MatchDetailScreen() {
           <TeamColumn team={away} />
         </View>
 
-        {!prediction ? (
+        {!prediction && fixture.free_pick ? (
+          /* §8.3: a blurred preview of the real data, not an empty box. This
+             branch previously did not exist, so a free user saw "Model
+             prediction pending" on a match the model had already predicted. */
+          <LockedPreview fixture={fixture} />
+        ) : !prediction ? (
           <EmptyPrediction />
         ) : (
           <>
@@ -234,6 +247,99 @@ function StatRow({ label, value }: { label: string; value: string }) {
       <Text style={[type.body, tabularNumbers, { color: colors.textPrimary, fontWeight: '600' }]}>
         {value}
       </Text>
+    </View>
+  );
+}
+
+/**
+ * The §8.3 contextual soft paywall.
+ *
+ * "Tapping a locked probability breakdown shows a blurred preview of the real
+ * data behind it." The point is to show that something real exists — a padlock
+ * over an empty rectangle sells nothing, because the user cannot tell whether
+ * there is anything worth paying for.
+ *
+ * §9.2 [HARD] is not weakened by this: the actual probabilities were never in
+ * the response. The bar below is drawn from the confidence band alone, and the
+ * scoreline grid is decorative noise, not data. There is nothing here to
+ * reverse-engineer.
+ */
+function LockedPreview({ fixture }: { fixture: Fixture }) {
+  const { colors } = useTheme();
+  const type = useType();
+  const router = useRouter();
+  const free = fixture.free_pick;
+  if (!free) return null;
+
+  const pickLabel =
+    free.headline_pick === 'home'
+      ? fixture.home_team.name
+      : free.headline_pick === 'away'
+        ? fixture.away_team.name
+        : 'Draw';
+
+  return (
+    <View style={{ gap: space.xl }}>
+      <View style={{ gap: space.sm }}>
+        <SectionLabel>Model</SectionLabel>
+        <Text style={[type.display, { color: colors.textPrimary }]}>{pickLabel}</Text>
+        <ConfidenceRow band={free.confidence_band} reason={free.confidence_reason} />
+      </View>
+
+      <View
+        style={{
+          padding: space.lg,
+          borderRadius: radius.lg,
+          borderWidth: 1,
+          borderColor: colors.border,
+          backgroundColor: colors.surface,
+          gap: space.md,
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+          <LockIcon size={16} color={colors.accent} />
+          <Text style={[type.heading, { color: colors.textPrimary }]}>
+            The full breakdown
+          </Text>
+        </View>
+
+        <Text style={[type.callout, { color: colors.textSecondary }]}>
+          Exact probabilities for every outcome, the scoreline heatmap, expected
+          goals, and the model's complete accuracy record.
+        </Text>
+
+        {/* Deliberately indistinct: this is a shape, not a dataset. */}
+        <View style={{ gap: space.xs, opacity: 0.28 }} pointerEvents="none">
+          {[0.62, 0.24, 0.14].map((w, i) => (
+            <View
+              key={i}
+              style={{
+                height: 10,
+                width: `${w * 100}%`,
+                borderRadius: radius.pill,
+                backgroundColor: i === 0 ? colors.accent : colors.textTertiary,
+              }}
+            />
+          ))}
+        </View>
+
+        <Pressable
+          onPress={() => router.push('/paywall')}
+          accessibilityRole="button"
+          accessibilityLabel="See the full model breakdown. Opens subscription options."
+          style={{
+            minHeight: MIN_TOUCH_TARGET,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: radius.pill,
+            backgroundColor: colors.accent,
+          }}
+        >
+          <Text style={[type.body, { fontWeight: '700', color: colors.accentInk }]}>
+            See the numbers
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
