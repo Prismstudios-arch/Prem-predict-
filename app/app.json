@@ -1,13 +1,20 @@
 {
   "expo": {
-    "name": "Prem Predict",
-    "slug": "prem-predict",
-    "scheme": "prempredict",
+    "name": "Reckon",
+    "slug": "reckon-football",
+    "scheme": "reckon",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0A0B0D"
+    },
     "ios": {
+      "//": "PERMANENT once an App Store Connect record exists. Deliberately not tied to the app name so a rename costs nothing.",
       "bundleIdentifier": "com.prempredict.app",
       "supportsTablet": false,
       "config": {
