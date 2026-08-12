@@ -35,6 +35,12 @@ def main() -> int:
     p_gw.add_argument("--week", type=int, default=1)
     p_gw.add_argument("--season", default=None)
 
+    p_grant = sub.add_parser(
+        "grant-premium",
+        help="DEV ONLY: give every account premium so the paid UI can be tested",
+    )
+    p_grant.add_argument("--revoke", action="store_true", help="set everyone back to free")
+
     p_bt = sub.add_parser("backtest", help="walk-forward backtest vs the market baseline")
     p_bt.add_argument("--seasons", nargs="+", default=["2023-24", "2024-25"])
     p_bt.add_argument("--reliability", action="store_true", help="print the §5.5 curve")
@@ -59,6 +65,8 @@ def main() -> int:
             from premmodel.jobs.settle import run
 
             run(args.season)
+        elif args.command == "grant-premium":
+            return _grant_premium(revoke=args.revoke)
         elif args.command == "gameweek":
             _print_gameweek(args.season or current_season(), args.week)
         elif args.command == "backtest":
@@ -66,6 +74,61 @@ def main() -> int:
     except ConfigError as exc:
         print(f"config error: {exc}", file=sys.stderr)
         return 2
+    return 0
+
+
+def _grant_premium(*, revoke: bool = False) -> int:
+    """DEV ONLY: flip every account's entitlement.
+
+    §9.2 [HARD] makes entitlement server-owned — the client has no UPDATE grant
+    on that column, and in production only the RevenueCat webhook writes it.
+    That is exactly right, and it also means there is no way to see the paid UI
+    on a dev build without a real purchase.
+
+    This is the escape hatch, and it is deliberately a worker command rather
+    than anything reachable from the app: it needs the service-role connection,
+    which only ever exists on your machine. It updates ALL users, which is safe
+    while you are the only one and obviously unsafe later — hence the count it
+    prints before finishing.
+    """
+    from premmodel import db
+
+    target = "free" if revoke else "premium"
+
+    with db.connection() as conn:
+        total = conn.execute("select count(*) as n from public.users").fetchone()
+        count = int(total["n"]) if total else 0
+
+        if count == 0:
+            print(
+                "No user accounts exist yet.\n\n"
+                "Launch the app once with a backend configured. If nothing appears,\n"
+                "anonymous sign-in is probably still disabled: Supabase dashboard ->\n"
+                "Authentication -> Sign In / Providers -> Anonymous sign-ins.",
+                file=sys.stderr,
+            )
+            return 1
+
+        if count > 5:
+            print(
+                f"Refusing to change {count} accounts. This command is a "
+                "single-developer convenience, not an admin tool.",
+                file=sys.stderr,
+            )
+            return 2
+
+        conn.execute(
+            """
+            update public.users
+            set entitlement = %s::public.entitlement_tier,
+                entitlement_expires_at = case when %s = 'premium'
+                                              then now() + interval '30 days'
+                                              else null end
+            """,
+            (target, target),
+        )
+
+    print(f"set {count} account(s) to {target}. Reload the app to see the change.")
     return 0
 
 
