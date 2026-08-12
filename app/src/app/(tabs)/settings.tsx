@@ -27,9 +27,7 @@ import {
   useTheme,
   useType,
 } from '@/theme';
-
-const TERMS_URL = 'https://reckonfootball.app/terms';
-const PRIVACY_URL = 'https://reckonfootball.app/privacy';
+import { MANAGE_SUBSCRIPTION_URL, PRIVACY_URL, TERMS_URL } from '@/core/links';
 
 export default function SettingsScreen() {
   const { colors } = useTheme();
@@ -137,7 +135,7 @@ export default function SettingsScreen() {
         <Action label="Restore purchases" onPress={onRestore} disabled={busy} />
         <Action
           label="Manage subscription"
-          onPress={() => void Linking.openURL('https://apps.apple.com/account/subscriptions')}
+          onPress={() => void Linking.openURL(MANAGE_SUBSCRIPTION_URL)}
         />
       </Section>
 

@@ -45,11 +45,7 @@ import {
   useTheme,
   useType,
 } from '@/theme';
-
-// §9.3 [HARD]: both must be live at stable URLs before submission, and
-// linked from the paywall before purchase (§8.3). Register the domain.
-const TERMS_URL = 'https://reckonfootball.app/terms';
-const PRIVACY_URL = 'https://reckonfootball.app/privacy';
+import { PRIVACY_URL, TERMS_URL } from '@/core/links';
 
 const PREMIUM_FEATURES = [
   'Full probability breakdown, not just the pick',
