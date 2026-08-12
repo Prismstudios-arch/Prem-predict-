@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "fixtures": "tsx scripts/print-fixtures.ts",
+    "verify-account": "tsx scripts/verify-account-path.ts",
     "check-bundle-secrets": "tsx scripts/check-bundle-secrets.ts"
   },
   "dependencies": {
