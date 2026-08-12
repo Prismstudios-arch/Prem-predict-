@@ -20,6 +20,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FixtureRow } from '@/components/FixtureRow';
+import { usePredictionStore } from '@/core/predictionStore';
 import {
   isUsingSampleData,
   loadGameweek,
@@ -41,10 +42,21 @@ export default function GameweekScreen() {
   const [state, setState] = useState<State>({ status: 'loading' });
   const [refreshing, setRefreshing] = useState(false);
 
+  const loadPicks = usePredictionStore((s) => s.load);
+  const picks = usePredictionStore((s) => s.picks);
+
+  const submitted =
+    state.status === 'ready'
+      ? state.data.fixtures.filter((f) => picks[f.id]).length
+      : 0;
+
   const load = useCallback(async () => {
     try {
       const data = await loadGameweek(1);
       setState({ status: 'ready', data });
+      // Load the user's existing picks so the header count and the pager both
+      // reflect what has actually been submitted, not a fresh start each launch.
+      await loadPicks(data.fixtures.map((f) => f.id));
     } catch (error) {
       // §10: never surface a raw error string. Log the detail, show a human one.
       console.error('loadGameweek failed', error);
@@ -138,18 +150,50 @@ export default function GameweekScreen() {
         />
       }
       ListHeaderComponent={
-        <View style={{ gap: space.xs, marginBottom: space.md }}>
-          <Text
-            style={[type.display, { color: colors.textPrimary }]}
-            accessibilityRole="header"
+        <View style={{ gap: space.md, marginBottom: space.md }}>
+          <View style={{ gap: space.xs }}>
+            <Text
+              style={[type.display, { color: colors.textPrimary }]}
+              accessibilityRole="header"
+            >
+              Gameweek {data.gameweek}
+            </Text>
+            <Text style={[type.callout, tabularNumbers, { color: colors.textSecondary }]}>
+              {data.fixtures.length} matches · {submitted} predicted
+            </Text>
+          </View>
+
+          {/* The entry point to the §6.1 prediction flow. Without this the
+              pager existed as a route nothing could reach, and predicting
+              meant visiting ten separate detail screens. */}
+          <Pressable
+            onPress={() => router.push('/predict')}
+            accessibilityRole="button"
+            accessibilityLabel={
+              submitted === 0
+                ? `Make your predictions for all ${data.fixtures.length} matches`
+                : `Continue your predictions. ${submitted} of ${data.fixtures.length} done`
+            }
+            style={({ pressed }) => ({
+              minHeight: 48,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: radius.pill,
+              backgroundColor: pressed ? colors.textPrimary : colors.accent,
+            })}
           >
-            Gameweek {data.gameweek}
-          </Text>
-          <Text style={[type.callout, tabularNumbers, { color: colors.textSecondary }]}>
-            {data.fixtures.length} matches · model {data.model_version}
-          </Text>
+            <Text style={[type.body, { fontWeight: '700', color: colors.accentInk }]}>
+              {submitted === 0
+                ? 'Make your predictions'
+                : submitted === data.fixtures.length
+                  ? 'Review your predictions'
+                  : `Continue — ${submitted}/${data.fixtures.length}`}
+            </Text>
+          </Pressable>
+
           {isUsingSampleData() && <SampleDataNotice />}
-          {data.fixtures[0]?.prediction?.data_regime === 'prior_heavy' && (
+          {(data.fixtures[0]?.prediction?.data_regime === 'prior_heavy' ||
+            data.fixtures[0]?.free_pick?.data_regime === 'prior_heavy') && (
             <EarlySeasonNotice />
           )}
         </View>

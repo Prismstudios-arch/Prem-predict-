@@ -105,6 +105,31 @@ function topScorelines(matrix: number[][], k: number) {
   return cells.sort((x, y) => y.p - x.p).slice(0, k);
 }
 
+/**
+ * §10: "every screen the user has visited must render from cache with a clear
+ * last-updated state. No blank screens, no infinite spinners."
+ *
+ * cache.ts was written in Phase 4 and never called, so a train journey through
+ * a tunnel produced the error state on a screen the user had already loaded.
+ * Network-first with disk fallback: a labelled stale gameweek beats a retry
+ * button every time.
+ */
+export async function loadGameweekCached(gameweek: number): Promise<{
+  data: Gameweek;
+  fetchedAt: Date;
+  isStale: boolean;
+  fromCache: boolean;
+}> {
+  const { withCache } = await import('./cache');
+  const result = await withCache(`gameweek:${gameweek}`, () => loadGameweek(gameweek));
+  return {
+    data: result.value,
+    fetchedAt: result.fetchedAt,
+    isStale: result.isStale,
+    fromCache: result.fromCache,
+  };
+}
+
 export async function loadGameweek(gameweek: number): Promise<Gameweek> {
   if (usingLiveBackend) {
     const season = currentSeason();

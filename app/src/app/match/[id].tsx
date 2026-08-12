@@ -12,13 +12,14 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LockIcon } from '@/components/Icons';
 import { ProbabilityBar } from '@/components/ProbabilityBar';
 import { PredictionInput, type UserPrediction } from '@/components/PredictionInput';
+import { usePredictionStore } from '@/core/predictionStore';
 import { ScoreMatrix, TopScorelines } from '@/components/ScoreMatrix';
 import { TeamMark } from '@/components/TeamMark';
 import { formatKickoff, loadFixture, type Fixture } from '@/data/repository';
@@ -43,12 +44,21 @@ export default function MatchDetailScreen() {
     void loadFixture(String(id)).then((f) => setFixture(f ?? null));
   }, [id]);
 
-  const onSubmit = useCallback((prediction: UserPrediction) => {
-    // Phase 3 writes this through the server-locked endpoint. The database
-    // rejects anything at or after kickoff (§2 [HARD]) regardless of what the
-    // client believes the time is.
-    console.log('prediction submitted', prediction);
-  }, []);
+  const submit = usePredictionStore((s) => s.submit);
+
+  /**
+   * Writes through the server-locked path. The database rejects anything at or
+   * after kickoff (§2 [HARD]) regardless of what this device believes the time
+   * is, so a refusal here is authoritative and is surfaced rather than swallowed.
+   */
+  const onSubmit = useCallback(
+    (prediction: UserPrediction) => {
+      void submit(String(id), prediction.homeGoals, prediction.awayGoals).then((result) => {
+        if (!result.ok && result.message) Alert.alert('Not saved', result.message);
+      });
+    },
+    [id, submit],
+  );
 
   if (fixture === undefined) {
     return (
