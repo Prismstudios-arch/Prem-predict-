@@ -1,5 +1,22 @@
 # App Store submission pack
 
+## Account details
+
+| Field | Value |
+|---|---|
+| App Store name | `Reckon Football` (`Reckon` was taken) |
+| Home-screen name | `Reckon` — set in `app.json`, unaffected by the above |
+| Bundle ID | `com.reckonfootball.app` |
+| SKU | `reckon-001` |
+| Support / contact email | `reckon2026@outlook.com` |
+| Privacy Policy URL | `<site>/privacy` |
+| Terms URL | `<site>/terms` |
+
+`<site>` comes from `EXPO_PUBLIC_SITE_URL` in `app/.env`, so the app and the
+listing always agree. Both URLs must load before submitting — App Store Connect
+asks for the privacy one directly and rejects a 404.
+
+
 Everything for App Store Connect. The §5.3 gambling boundary shapes most of it —
 see "Reviewer notes" for why that matters more than usual here.
 
@@ -122,6 +139,12 @@ Expected rating: **4+**.
 > Demo account: <fill in before submitting>
 > The account has predictions already submitted so the results screen is
 > populated.
+>
+> Note: the app creates an anonymous account on first launch, so a reviewer can
+> use every feature without signing in. Sign in with Apple is offered but never
+> required.
+>
+> Contact: reckon2026@outlook.com
 >
 > Restore Purchases is on the paywall and in Settings. Account deletion is in
 > Settings.
