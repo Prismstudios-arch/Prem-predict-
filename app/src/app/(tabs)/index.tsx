@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FixtureRow } from '@/components/FixtureRow';
 import { usePredictionStore } from '@/core/predictionStore';
 import {
+  isMisconfigured,
   isUsingSampleData,
   loadGameweek,
   type Gameweek,
@@ -191,7 +192,11 @@ export default function GameweekScreen() {
             </Text>
           </Pressable>
 
-          {isUsingSampleData() && <SampleDataNotice />}
+          {isMisconfigured() ? (
+            <MisconfiguredNotice />
+          ) : (
+            isUsingSampleData() && <SampleDataNotice />
+          )}
           {(data.fixtures[0]?.prediction?.data_regime === 'prior_heavy' ||
             data.fixtures[0]?.free_pick?.data_regime === 'prior_heavy') && (
             <EarlySeasonNotice />
@@ -237,6 +242,35 @@ function EarlySeasonNotice() {
       <Text style={[type.caption, { color: colors.textSecondary }]}>
         Limited current-season data. These probabilities lean on last season and
         carry wide uncertainty.
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * A shipped build with no backend. Loud on purpose: the failure mode it
+ * replaces was silent, and a tester would have reported "looks fine" while
+ * every fixture on screen was bundled sample data.
+ */
+function MisconfiguredNotice() {
+  const { colors } = useTheme();
+  const type = useType();
+  return (
+    <View
+      accessible
+      accessibilityLabel="This build is misconfigured and is not connected to live data."
+      style={{
+        padding: space.md,
+        borderRadius: radius.md,
+        borderWidth: 1,
+        borderColor: colors.negative,
+        gap: space.xxs,
+      }}
+    >
+      <Text style={[type.micro, { color: colors.negative }]}>NOT CONNECTED</Text>
+      <Text style={[type.caption, { color: colors.textSecondary }]}>
+        This build has no backend configured, so these fixtures are sample data.
+        Set EXPO_PUBLIC_SUPABASE_URL in eas.json and rebuild.
       </Text>
     </View>
   );

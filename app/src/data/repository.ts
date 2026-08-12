@@ -95,6 +95,23 @@ export function isUsingSampleData(): boolean {
   return !usingLiveBackend;
 }
 
+/**
+ * True when a shipped build has no backend configured.
+ *
+ * This is a misconfiguration, never a valid state, and it is invisible without
+ * a check: the app would quietly fall back to the bundled sample gameweek and
+ * look like it worked, while showing fixtures nobody can predict on.
+ *
+ * It nearly shipped. `.env` is gitignored — correctly, it is local config — so
+ * EAS Build never receives it, and the values now live in eas.json for the
+ * preview and production profiles. §2 [HARD] permits exactly these in the
+ * bundle: the anon key is designed to be public and RLS is what protects the
+ * data.
+ */
+export function isMisconfigured(): boolean {
+  return !usingLiveBackend && process.env.EXPO_PUBLIC_ENV !== 'development';
+}
+
 /** Top-N scorelines, read off the matrix the server already sent. */
 function topScorelines(matrix: number[][], k: number) {
   const cells: { home: number; away: number; p: number }[] = [];
