@@ -1,0 +1,28 @@
+{
+  // Static hosting for the marketing page, privacy policy and terms.
+  //
+  // Cloudflare has merged Pages into Workers, so the dashboard's "connect a
+  // repo" flow now runs `npx wrangler deploy` and expects this file. There is
+  // no Worker script: a config with `assets` and no `main` serves the folder
+  // directly, which is exactly what three static pages need.
+  //
+  // §9.3 [HARD] requires the privacy policy and terms to be reachable at stable
+  // URLs before the app can be submitted, and app/src/core/links.ts already
+  // points at them.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "reckon",
+  "compatibility_date": "2026-08-01",
+
+  "assets": {
+    "directory": "./web",
+
+    // Serves /privacy from web/privacy/index.html without the extension.
+    // The pages are laid out as directories precisely so these URLs work on
+    // any host, rather than depending on one provider's rewrite behaviour.
+    "html_handling": "auto-trailing-slash",
+
+    // An unknown path returns the landing page rather than a bare 404, so a
+    // mistyped link still lands somewhere useful.
+    "not_found_handling": "single-page-application"
+  }
+}
