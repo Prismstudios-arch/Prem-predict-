@@ -7,6 +7,12 @@
 *.p12
 *.mobileprovision
 
+# The .env.* rule above also swallows *.example templates, which are the one
+# kind of env file that must be committed — they are what tells the next
+# person which values exist.
+!*.env.example
+!.env.*.example
+
 # ---- node / expo ----
 node_modules/
 .expo/
