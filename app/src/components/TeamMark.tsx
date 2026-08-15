@@ -83,8 +83,6 @@ function TeamMarkImpl({ team, size = 32, showInitials = true, style }: Props) {
   // the mark needs a hairline or it dissolves into the surface.
   const needsOutline = luminance(primary) > 0.75 || luminance(primary) < 0.06;
 
-  const initialsColor = luminance(primary) > 0.5 ? '#0A0B0D' : '#FFFFFF';
-
   return (
     <View
       style={[{ width: size, height: size }, style]}
@@ -148,18 +146,37 @@ function TeamMarkImpl({ team, size = 32, showInitials = true, style }: Props) {
           }}
           pointerEvents="none"
         >
-          <Text
-            allowFontScaling={false}
+          {/*
+            A solid plate behind the initials.
+
+            Without it the letters sat directly on the stripes and hoops, and a
+            vertical stripe passing through a glyph reads as part of the letter
+            — Arsenal's "ARS" looked like "APS", and Newcastle's white text on
+            black-and-white stripes vanished entirely. The plate is the same
+            near-black as the app surface, so the mark still reads as one object
+            rather than a badge with a sticker on it.
+          */}
+          <View
             style={{
-              color: initialsColor,
-              fontSize: size * 0.34,
-              fontWeight: '800',
-              letterSpacing: -0.3,
-              ...tabularNumbers,
+              paddingHorizontal: size * 0.1,
+              paddingVertical: size * 0.03,
+              borderRadius: size * 0.12,
+              backgroundColor: 'rgba(10,11,13,0.82)',
             }}
           >
-            {team.short_name}
-          </Text>
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: '#FFFFFF',
+                fontSize: size * 0.32,
+                fontWeight: '800',
+                letterSpacing: -0.3,
+                ...tabularNumbers,
+              }}
+            >
+              {team.short_name}
+            </Text>
+          </View>
         </View>
       )}
     </View>

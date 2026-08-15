@@ -219,3 +219,24 @@ export function formatKickoff(iso: string): string {
     minute: '2-digit',
   });
 }
+
+/**
+ * Every club, for the onboarding picker.
+ *
+ * Reads from the database so names and abbreviations match the rest of the app
+ * exactly. Falls back to the clubs in the bundled sample when there is no
+ * backend, rather than showing an empty list.
+ */
+export async function loadTeams(): Promise<Team[]> {
+  if (usingLiveBackend) {
+    const { fetchTeams } = await import('@/api/client');
+    return fetchTeams();
+  }
+  const week = GameweekSchema.parse(sampleGameweek);
+  const byslug = new Map<string, Team>();
+  for (const f of week.fixtures) {
+    byslug.set(f.home_team.slug, f.home_team);
+    byslug.set(f.away_team.slug, f.away_team);
+  }
+  return [...byslug.values()].sort((a, b) => a.name.localeCompare(b.name));
+}

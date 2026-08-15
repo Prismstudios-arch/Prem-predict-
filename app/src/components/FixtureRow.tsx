@@ -199,7 +199,14 @@ function LockedSplit({ fixture }: { fixture: Fixture }) {
   const free = fixture.free_pick;
   if (!free) return null;
 
-  const name = pickName(free.headline_pick, fixture.home_team.name, fixture.away_team.name);
+  // Short name here, not the full club name: "Brighton & Hove Albion FC"
+  // truncated to "Brighton & Hove Albio…" on a real phone, and an ellipsis in
+  // the middle of the model's actual answer is the worst place to put one.
+  const name = pickName(
+    free.headline_pick,
+    fixture.home_team.short_name,
+    fixture.away_team.short_name,
+  );
 
   // A visual lean derived only from the band, never from real probabilities —
   // those are not in this payload at all (§9.2 [HARD]).

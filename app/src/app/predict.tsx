@@ -54,6 +54,8 @@ export default function PredictFlowScreen() {
   const insets = useSafeAreaInsets();
   const { width } = Dimensions.get('window');
   const listRef = useRef<FlatList<Fixture>>(null);
+  /** Set by the visible card so the pager can commit it before navigating. */
+  const commitRef = useRef<((fixtureId: string) => void) | null>(null);
 
   const [fixtures, setFixtures] = useState<Fixture[] | null>(null);
   const [index, setIndex] = useState(0);
@@ -72,13 +74,23 @@ export default function PredictFlowScreen() {
   const ids = useMemo(() => (fixtures ?? []).map((f) => f.id), [fixtures]);
   const done = countSubmitted(ids);
 
+  /**
+   * Commits the card you are leaving, then moves.
+   *
+   * Previously a prediction only saved when a stepper was tapped, so anyone who
+   * agreed with the default 1-0 swiped past and saved nothing — the card said
+   * "Not saved yet" and they had no reason to think that was a problem. Moving
+   * on is the intent to commit.
+   */
   const goTo = useCallback(
     (next: number) => {
       if (!fixtures || next < 0 || next >= fixtures.length) return;
+      const leaving = fixtures[index];
+      if (leaving) commitRef.current?.(leaving.id);
       listRef.current?.scrollToOffset({ offset: next * width, animated: true });
       setIndex(next);
     },
-    [fixtures, width],
+    [fixtures, index, width],
   );
 
   const onMomentumEnd = useCallback(
@@ -150,7 +162,14 @@ export default function PredictFlowScreen() {
           onMomentumScrollEnd={onMomentumEnd}
           getItemLayout={(_, i) => ({ length: width, offset: width * i, index: i })}
           renderItem={({ item }) => (
-            <PredictCard fixture={item} width={width} onSubmit={submit} />
+            <PredictCard
+              fixture={item}
+              width={width}
+              onSubmit={submit}
+              registerCommit={(fn) => {
+                commitRef.current = fn;
+              }}
+            />
           )}
         />
 
@@ -168,6 +187,8 @@ export default function PredictFlowScreen() {
               label={allDone ? 'Done' : `Finish (${done}/${fixtures.length})`}
               primary
               onPress={() => {
+                const last = fixtures[index];
+                if (last) commitRef.current?.(last.id);
                 void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 router.back();
               }}
@@ -183,10 +204,12 @@ function PredictCard({
   fixture,
   width,
   onSubmit,
+  registerCommit,
 }: {
   fixture: Fixture;
   width: number;
   onSubmit: (id: string, h: number, a: number) => Promise<{ ok: boolean; message?: string }>;
+  registerCommit: (fn: (fixtureId: string) => void) => void;
 }) {
   const { colors } = useTheme();
   const type = useType();
@@ -211,6 +234,13 @@ function PredictCard({
     },
     [fixture.id, onSubmit],
   );
+
+  // Hand the pager a way to commit this card's current values as it leaves.
+  useEffect(() => {
+    registerCommit((fixtureId) => {
+      if (fixtureId === fixture.id) void save(home, away);
+    });
+  }, [registerCommit, fixture.id, home, away, save]);
 
   const adjust = useCallback(
     (side: 'home' | 'away', delta: number) => {
@@ -266,7 +296,11 @@ function PredictCard({
           </Text>
         ) : (
           <Text style={[type.caption, { color: saved ? colors.accent : colors.textTertiary }]}>
-            {existing?.pending ? 'Saving…' : saved ? 'Saved' : 'Not saved yet'}
+            {existing?.pending
+              ? 'Saving…'
+              : saved
+                ? 'Saved'
+                : 'Saves when you continue'}
           </Text>
         )}
       </View>

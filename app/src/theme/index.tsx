@@ -42,19 +42,32 @@ type ThemeValue = {
 
 const ThemeContext = createContext<ThemeValue | null>(null);
 
+/**
+ * The app is dark-only, and app.json declares it as such with
+ * `userInterfaceStyle: "dark"`.
+ *
+ * This previously followed the *device* colour scheme, which contradicted that
+ * declaration and produced the worst possible result on a phone set to Light:
+ * dark-palette text (#F2F4F7) rendered on an unpainted white scene, so screen
+ * titles were near-invisible. §7.2 says "dark first, ship a light mode but
+ * design dark" — a light mode that has never been designed or tested is not a
+ * feature, it is a rendering bug waiting for the first user with Light mode on.
+ *
+ * lightPalette is kept and still passes the contrast suite, so switching this
+ * back is one line once light mode is genuinely designed.
+ */
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const scheme = useColorScheme();
   const { fontScale } = useWindowDimensions();
 
   const value = useMemo<ThemeValue>(() => {
     const capped = Math.min(fontScale, MAX_FONT_SCALE);
     return {
-      colors: scheme === 'light' ? lightPalette : palette,
-      isDark: scheme !== 'light',
+      colors: palette,
+      isDark: true,
       fontScale: capped,
       shouldStack: capped >= STACK_LAYOUT_THRESHOLD,
     };
-  }, [scheme, fontScale]);
+  }, [fontScale]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

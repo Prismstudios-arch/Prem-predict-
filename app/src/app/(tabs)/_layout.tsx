@@ -27,6 +27,10 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        // The scene container has no background of its own, so without this it
+        // renders on the OS default — white — and every screen inside it showed
+        // dark-palette text on a white page.
+        sceneStyle: { backgroundColor: colors.base },
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.textTertiary,
         tabBarStyle: {

@@ -21,14 +21,14 @@
  * does, converts far worse and cannot be undone.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import * as Notifications from 'expo-notifications';
 
 import { TeamMark } from '@/components/TeamMark';
-import { TEAM_COLOURS } from '@/data/teamColours';
+import { loadTeams } from '@/data/repository';
 import {
   MIN_TOUCH_TARGET,
   radius,
@@ -37,8 +37,24 @@ import {
   useType,
 } from '@/theme';
 
-/** Clubs offered at onboarding. Colours come from the shared seed file. */
-const SELECTABLE = Object.keys(TEAM_COLOURS).slice(0, 20).sort();
+/**
+ * Clubs offered at onboarding, loaded from the API.
+ *
+ * These were previously derived by title-casing the colour-file slugs, which
+ * produced "Afc Bournemouth" and "Brighton And Hove Albion" here while every
+ * other screen showed "AFC Bournemouth" and "Brighton & Hove Albion FC" from
+ * the database. Same club, two names, one screen apart. The abbreviations
+ * disagreed too — "AFC" and "BRI" in onboarding against "BOU" and "BHA" in the
+ * gameweek list, because onboarding was slicing the first three characters of a
+ * name rather than using the real short name.
+ */
+type SelectableTeam = {
+  slug: string;
+  name: string;
+  short_name: string;
+  primary_color: string;
+  secondary_color: string;
+};
 
 type Step = 'club' | 'how' | 'notifications' | 'done';
 const ORDER: Step[] = ['club', 'how', 'notifications', 'done'];
@@ -50,6 +66,11 @@ export default function OnboardingScreen() {
 
   const [step, setStep] = useState<Step>('club');
   const [club, setClub] = useState<string | null>(null);
+  const [teams, setTeams] = useState<SelectableTeam[]>([]);
+
+  useEffect(() => {
+    void loadTeams().then(setTeams).catch(() => setTeams([]));
+  }, []);
 
   const advance = useCallback(() => {
     const next = ORDER[ORDER.indexOf(step) + 1];
@@ -74,7 +95,7 @@ export default function OnboardingScreen() {
       <ProgressDots current={ORDER.indexOf(step)} total={ORDER.length} />
 
       {step === 'club' && (
-        <ClubStep selected={club} onSelect={setClub} onContinue={advance} />
+        <ClubStep teams={teams} selected={club} onSelect={setClub} onContinue={advance} />
       )}
       {step === 'how' && <HowStep onContinue={advance} />}
       {step === 'notifications' && (
@@ -115,10 +136,12 @@ function ProgressDots({ current, total }: { current: number; total: number }) {
 }
 
 function ClubStep({
+  teams,
   selected,
   onSelect,
   onContinue,
 }: {
+  teams: SelectableTeam[];
   selected: string | null;
   onSelect: (slug: string) => void;
   onContinue: () => void;
@@ -138,20 +161,18 @@ function ClubStep({
       </View>
 
       <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.sm }}>
-        {SELECTABLE.map((slug) => {
-          const pair = TEAM_COLOURS[slug]!;
-          const isSelected = selected === slug;
-          const name = slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        {teams.map((team) => {
+          const isSelected = selected === team.slug;
           return (
             <Pressable
-              key={slug}
+              key={team.slug}
               onPress={() => {
                 void Haptics.selectionAsync();
-                onSelect(slug);
+                onSelect(team.slug);
               }}
               accessibilityRole="radio"
               accessibilityState={{ selected: isSelected }}
-              accessibilityLabel={name}
+              accessibilityLabel={team.name}
               style={{
                 minHeight: MIN_TOUCH_TARGET,
                 flexDirection: 'row',
@@ -165,17 +186,10 @@ function ClubStep({
                 backgroundColor: colors.surface,
               }}
             >
-              <TeamMark
-                team={{
-                  slug,
-                  name,
-                  short_name: name.slice(0, 3).toUpperCase(),
-                  primary_color: pair[0],
-                  secondary_color: pair[1],
-                }}
-                size={28}
-              />
-              <Text style={[type.body, { color: colors.textPrimary }]}>{name}</Text>
+              <TeamMark team={team} size={28} />
+              <Text style={[type.body, { color: colors.textPrimary, flex: 1 }]}>
+                {team.name}
+              </Text>
             </Pressable>
           );
         })}

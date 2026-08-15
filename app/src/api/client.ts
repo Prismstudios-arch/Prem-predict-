@@ -175,3 +175,14 @@ export async function fetchPremiumPredictions(
   if (error) throw new Error(`fetchPremiumPredictions failed: ${error.message}`);
   return z.array(PremiumPredictionSchema).parse(data ?? []);
 }
+
+/** All clubs, alphabetical. Used by the onboarding club picker. */
+export async function fetchTeams() {
+  const { data, error } = await supabase()
+    .from('teams')
+    .select(TEAM_COLUMNS)
+    .order('name', { ascending: true });
+
+  if (error) throw new Error(`fetchTeams failed: ${error.message}`);
+  return z.array(TeamRefSchema).parse(data ?? []);
+}
