@@ -1,0 +1,29 @@
+# Supabase project config.
+#
+# Only the Edge Function JWT settings matter here, and one of them is
+# load-bearing in a way that is invisible until it fails silently.
+#
+# Supabase's function gateway verifies a Supabase JWT on every request by
+# default, BEFORE the function code runs. RevenueCat does not send a Supabase
+# JWT — it sends `Authorization: Bearer <your shared webhook secret>`, which is
+# the scheme its dashboard offers. With the default on, the gateway answers 401
+# and revenuecat-webhook never executes: no audit row, no entitlement write,
+# nothing in the function logs to explain it, and RevenueCat retrying forever
+# against a wall.
+#
+# The symptom is "I paid and the app still shows a paywall", and the cause is
+# one line of config.
+
+project_id = "wqrpvvrbgaotcozdyvoi"
+
+[functions.revenuecat-webhook]
+# Off, because the caller is RevenueCat, not a signed-in user. The function is
+# not unauthenticated as a result — it compares the bearer token to
+# REVENUECAT_WEBHOOK_SECRET itself, and rejects before parsing the body.
+verify_jwt = false
+
+[functions.sync-entitlement]
+# On, and required. This function derives the user id from the verified JWT
+# rather than from the request body — that is the whole reason it cannot be
+# used to grant premium to somebody else's account (§9.2 [HARD]).
+verify_jwt = true

@@ -232,12 +232,22 @@ shows the paywall — no matter what StoreKit or RevenueCat think.
 
 ### D1. Deploy the two Edge Functions (~5 min)
 
+Run from the **repo root**, not from `app/` — the CLI looks for
+`supabase/config.toml` beside you.
+
 ```powershell
 npx supabase@latest login
-npx supabase@latest link --project-ref wqrpvvrbgaotcozdyvoi
-npx supabase@latest functions deploy revenuecat-webhook
-npx supabase@latest functions deploy sync-entitlement
+npx supabase@latest functions deploy revenuecat-webhook --project-ref wqrpvvrbgaotcozdyvoi
+npx supabase@latest functions deploy sync-entitlement   --project-ref wqrpvvrbgaotcozdyvoi
 ```
+
+`--project-ref` avoids `supabase link`, which would ask for the database
+password for no benefit here.
+
+`supabase/config.toml` sets `verify_jwt = false` on the webhook. That is not
+optional: the gateway checks for a Supabase JWT before your function runs, and
+RevenueCat sends its own shared secret instead. With verification on, the
+webhook answers 401 forever, logs nothing, and the entitlement never lands.
 
 ### D2. Set their secrets (~5 min)
 
@@ -245,8 +255,8 @@ Invent any long random string for the webhook secret — it just has to match on
 both sides.
 
 ```powershell
-npx supabase@latest secrets set REVENUECAT_WEBHOOK_SECRET="<a long random string you invent>"
-npx supabase@latest secrets set REVENUECAT_SECRET_KEY="<RevenueCat -> API keys -> Secret key, starts sk_>"
+npx supabase@latest secrets set REVENUECAT_WEBHOOK_SECRET="<a long random string you invent>" --project-ref wqrpvvrbgaotcozdyvoi
+npx supabase@latest secrets set REVENUECAT_SECRET_KEY="<RevenueCat -> API keys -> Secret key, starts sk_>" --project-ref wqrpvvrbgaotcozdyvoi
 ```
 
 ⚠️ The **secret** key (`sk_…`) is not the public SDK key (`appl_…`) that is in
