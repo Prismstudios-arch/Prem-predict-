@@ -100,8 +100,21 @@ if ($LASTEXITCODE -ne 0) { throw 'Failed to set REVENUECAT_WEBHOOK_SECRET.' }
 if ($LASTEXITCODE -ne 0) { throw 'Failed to set REVENUECAT_SECRET_KEY.' }
 
 # --- what to do next --------------------------------------------------------
+#
+# The secret is deliberately NOT printed.
+#
+# It was printed here originally, on the reasonable-sounding grounds that the
+# user needs it in order to paste it into RevenueCat. What actually happened is
+# that it got copied out of the terminal along with the surrounding output and
+# pasted somewhere it should never have gone - twice - and each time the fix
+# was to rotate it and redeploy.
+#
+# A secret that a script prints is a secret that ends up in a scrollback
+# buffer, a screenshot, or a chat window. The value is already sitting in
+# supabase\.env.deploy, which is gitignored and which the user has to open
+# anyway; pointing at it costs one extra click and removes the failure mode.
 Write-Host "`n============================================================" -ForegroundColor Green
-Write-Host " Deployed. Now paste these into RevenueCat:" -ForegroundColor Green
+Write-Host " Deployed. Now set up the webhook in RevenueCat:" -ForegroundColor Green
 Write-Host " Integrations -> Webhooks -> + New" -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Green
 Write-Host ""
@@ -109,7 +122,8 @@ Write-Host "  Webhook URL"
 Write-Host "  https://$ProjectRef.supabase.co/functions/v1/revenuecat-webhook"
 Write-Host ""
 Write-Host "  Authorization header"
-Write-Host "  Bearer $webhookSecret"
+Write-Host "  The word 'Bearer', a space, then REVENUECAT_WEBHOOK_SECRET"
+Write-Host "  copied from supabase\.env.deploy"
 Write-Host ""
 Write-Host "  Environment:  Sandbox AND Production"
 Write-Host ""

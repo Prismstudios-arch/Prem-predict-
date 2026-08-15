@@ -289,7 +289,7 @@ RevenueCat → your project → **Integrations → Webhooks → + New**
 | Field | Value |
 |---|---|
 | URL | `https://wqrpvvrbgaotcozdyvoi.supabase.co/functions/v1/revenuecat-webhook` |
-| Authorization header | `Bearer <the value deploy.ps1 printed>` |
+| Authorization header | `Bearer ` + the `REVENUECAT_WEBHOOK_SECRET` value from `supabase\.env.deploy` |
 | Environment | **Sandbox and Production** — sandbox is how you test |
 
 ### D5. Check the entitlement, not just the offering (~2 min)
@@ -313,8 +313,8 @@ screen — even if the webhook is slow. Then check in Supabase:
 
 ```sql
 select entitlement, entitlement_expires_at from public.users where id = auth.uid();
-select event_type, entitlement, created_at from public.entitlement_events
-order by created_at desc limit 5;
+select event_type, entitlement, received_at from public.entitlement_events
+order by received_at desc limit 5;
 ```
 
 `MANUAL_SYNC` rows are `sync-entitlement`; the rest are the webhook. Seeing
