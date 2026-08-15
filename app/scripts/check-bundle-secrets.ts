@@ -81,6 +81,51 @@ try {
   process.exit(2);
 }
 
+/**
+ * Refuse to scan a bundle older than the source it claims to cover.
+ *
+ * `dist/` is a build artefact that nothing cleans up, so a run of this script
+ * a day after the last export happily scans yesterday's bundle and prints a
+ * green tick. That is worse than not running it: this is a §9/§12 [HARD]
+ * pre-submission gate, and a false pass is exactly the state in which a key
+ * ships.
+ *
+ * It happened. The check reported "no forbidden secrets" against a bundle
+ * built before the day's work existed.
+ */
+function newestMtime(dir: string, skip: RegExp): number {
+  let newest = 0;
+  const stack = [dir];
+  while (stack.length) {
+    const current = stack.pop()!;
+    for (const entry of readdirSync(current)) {
+      if (skip.test(entry)) continue;
+      const full = join(current, entry);
+      const stat = statSync(full);
+      if (stat.isDirectory()) stack.push(full);
+      else newest = Math.max(newest, stat.mtimeMs);
+    }
+  }
+  return newest;
+}
+
+const bundleMtime = newestMtime(BUNDLE_DIR, /^$/);
+const sourceMtime = Math.max(
+  newestMtime('src', /^(node_modules)$/),
+  statSync('app.json').mtimeMs,
+  statSync('package.json').mtimeMs,
+);
+
+if (sourceMtime > bundleMtime) {
+  const age = Math.round((sourceMtime - bundleMtime) / 60_000);
+  console.error(
+    `${BUNDLE_DIR}/ is stale — source has changed in the ${age} minute(s) since it was built.\n` +
+      `Scanning it would pass against code that is not the code you are shipping.\n` +
+      `Run:  npx expo export --platform ios`,
+  );
+  process.exit(2);
+}
+
 const findings: Finding[] = [];
 let scanned = 0;
 
