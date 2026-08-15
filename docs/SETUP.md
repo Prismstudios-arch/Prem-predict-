@@ -230,50 +230,69 @@ response for an unentitled user, not hidden in the UI. So until
 `public.users.entitlement` flips, the heatmap has no data to draw and correctly
 shows the paywall — no matter what StoreKit or RevenueCat think.
 
-### D1. Deploy the two Edge Functions (~5 min)
-
-Run from the **repo root**, not from `app/` — the CLI looks for
-`supabase/config.toml` beside you.
+### D1. Install the Supabase CLI (~2 min, once)
 
 ```powershell
-npx supabase@latest login
-npx supabase@latest functions deploy revenuecat-webhook --project-ref wqrpvvrbgaotcozdyvoi
-npx supabase@latest functions deploy sync-entitlement   --project-ref wqrpvvrbgaotcozdyvoi
+.\supabase\install-cli.ps1
 ```
 
-`--project-ref` avoids `supabase link`, which would ask for the database
-password for no benefit here.
+**Do not use `npx supabase`.** On Windows it fails with `No matching Supabase
+CLI binary package found for win32-x64`: the npm package is a shim that pulls
+the real binary from a platform-specific optionalDependency, and npm has a
+long-running bug where those get skipped or mis-cached, after which the shim
+throws instead of falling back. Supabase's own docs say a global npm install is
+unsupported and point Windows users elsewhere.
 
-`supabase/config.toml` sets `verify_jwt = false` on the webhook. That is not
-optional: the gateway checks for a Supabase JWT before your function runs, and
-RevenueCat sends its own shared secret instead. With verification on, the
-webhook answers 401 forever, logs nothing, and the entitlement never lands.
+The script fetches the same binary from the project's GitHub releases into
+`%LOCALAPPDATA%\supabase-cli`. No admin rights, nothing added to PATH, and
+deleting the folder uninstalls it. Re-running it is a no-op.
 
-### D2. Set their secrets (~5 min)
+### D2. Fill in `supabase\.env.deploy` (~5 min)
 
-Invent any long random string for the webhook secret — it just has to match on
-both sides.
+Three values. `REVENUECAT_WEBHOOK_SECRET` is already generated for you.
+
+| Key | Where from |
+|---|---|
+| `SUPABASE_ACCESS_TOKEN` | <https://supabase.com/dashboard/account/tokens> -> Generate new token |
+| `REVENUECAT_WEBHOOK_SECRET` | already filled in - a 48-char random string |
+| `REVENUECAT_SECRET_KEY` | RevenueCat -> Project settings -> API keys -> **Secret key**, starts `sk_` |
+
+The access token replaces `supabase login`, which needs a browser.
+
+⚠️ The `sk_` key is **not** the `appl_` key in `eas.json`. `appl_` is the public
+SDK key, safe in the app bundle, and can only read offerings. `sk_` can read and
+modify your whole RevenueCat account. It belongs in this gitignored file and
+nowhere else.
+
+### D3. Deploy (~3 min)
+
+From the repo root:
 
 ```powershell
-npx supabase@latest secrets set REVENUECAT_WEBHOOK_SECRET="<a long random string you invent>" --project-ref wqrpvvrbgaotcozdyvoi
-npx supabase@latest secrets set REVENUECAT_SECRET_KEY="<RevenueCat -> API keys -> Secret key, starts sk_>" --project-ref wqrpvvrbgaotcozdyvoi
+.\supabase\deploy.ps1
 ```
 
-⚠️ The **secret** key (`sk_…`) is not the public SDK key (`appl_…`) that is in
-`eas.json`. The secret key can read and modify your RevenueCat account. It goes
-here and nowhere else — never in `.env`, never in the app, never in chat.
+Deploys both functions and sets both secrets, then prints the exact webhook URL
+and `Bearer` header for the next step.
 
-### D3. Point RevenueCat at the webhook (~3 min)
+It refuses to run rather than half-succeed if: you are in the wrong directory
+(which would deploy the webhook with JWT verification on), the webhook secret is
+under 24 characters, or you pasted the `appl_` key. All three otherwise fail
+silently, hours later, with the same symptom - a paywall that never unlocks.
+
+Docker is not required: `--use-api` bundles the functions on Supabase's side.
+
+### D4. Point RevenueCat at the webhook (~3 min)
 
 RevenueCat → your project → **Integrations → Webhooks → + New**
 
 | Field | Value |
 |---|---|
 | URL | `https://wqrpvvrbgaotcozdyvoi.supabase.co/functions/v1/revenuecat-webhook` |
-| Authorization header | `Bearer <the same random string from D2>` |
+| Authorization header | `Bearer <the value deploy.ps1 printed>` |
 | Environment | **Sandbox and Production** — sandbox is how you test |
 
-### D4. Check the entitlement, not just the offering (~2 min)
+### D5. Check the entitlement, not just the offering (~2 min)
 
 Two different things in RevenueCat share the name you chose:
 
@@ -286,7 +305,7 @@ The app checks the **Entitlement**, and its identifier must be exactly
 exists and that **both** products are attached to it. An Offering with no
 Entitlement sells fine and unlocks nothing.
 
-### D5. Test it
+### D6. Test it
 
 Buy with a sandbox Apple ID. The app calls `sync-entitlement` before dismissing
 the paywall, so premium should be live by the time you are back on the match
