@@ -89,8 +89,8 @@ called "Football Prediction & Tips" and sit in exactly that bucket.
 > Payment is charged to your Apple ID. Manage or cancel in your Apple ID
 > settings.
 >
-> Terms: https://<your-domain>/terms
-> Privacy: https://<your-domain>/privacy
+> Terms: https://reckon.jonnywilsonnn2012.workers.dev/terms
+> Privacy: https://reckon.jonnywilsonnn2012.workers.dev/privacy
 >
 > Not affiliated with, endorsed by, or connected to the Premier League, the
 > Football Association, or any football club. Predictions are statistical
@@ -110,7 +110,13 @@ a deliberate decision, not by accident.**
 
 ---
 
-## Age rating
+## Age rating — DONE
+
+Calculated **4+**. Age Categories and Override: **Not Applicable**.
+
+Not "Made for Kids": that opts into the Kids Category, which forbids
+third-party analytics entirely (PostHog would have to go) and brings a much
+stricter review. §1.3's audience is 18-40, not children.
 
 Answer **No** to every gambling question. Truthfully — there is no wagering, no
 real or virtual currency, no odds displayed, and no link to any betting service.
