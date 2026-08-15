@@ -180,18 +180,56 @@ UGC obligations).
 
 ## Screenshots
 
-6.9" and 6.5" required. Lead with the signature match-detail screen (§7.3).
+Generated, not hand-made:
 
-1. **Match detail** — the probability bar and scoreline heatmap. The screenshot
-   that sells the app.
-2. **Gameweek list** — ten matches, model splits visible.
-3. **Results** — "You 6 — Model 4".
-4. **Accuracy** — the reliability chart, seeded with backtest data and labelled
-   as historical (§5.5).
-5. **Prediction input**.
+```
+worker/.venv/Scripts/python.exe app/scripts/generate-screenshots.py
+```
 
-Overlay text states the benefit, not the feature: *"See exactly how confident
-the model is"* beats *"Probability breakdowns"*.
+Writes ten shots at both sizes App Store Connect accepts:
+
+| Folder | Size | Slot |
+|---|---|---|
+| `app/assets/screenshots/6.9-inch/` | 1290 × 2796 | **required** — upload this set |
+| `app/assets/screenshots/6.5-inch/` | 1242 × 2688 | legacy, optional |
+
+Rendered natively at each size rather than up-scaled, because a resampled
+screenshot is visibly soft next to a native one at these dimensions.
+
+**Order is deliberate.** Apple shows only the first three on the install sheet
+without the user swiping, so those three carry the whole pitch: what the model
+gives you, what a week looks like, and what you actually do.
+
+| # | Screen | Caption |
+|---|---|---|
+| 01 | Match detail (§7.3 signature) | See how sure it is. |
+| 02 | Gameweek list | Ten matches. Every Tuesday. |
+| 03 | Prediction input | Call all ten in a minute. |
+| 04 | Results | Monday morning, you find out. |
+| 05 | Reliability chart | A model that admits it's guessing. |
+| 06 | Scorelines + marginals | Every scoreline, ranked. |
+| 07 | Confidence ranking | It tells you what it doesn't know. |
+| 08 | Crowd vs model | You, the model, everyone else. |
+| 09 | Club picker (§7.4 marks) | Pick your club. |
+| 10 | No-gambling statement | No odds. No betting. Ever. |
+
+Overlay text states the benefit, not the feature. Captions follow §5.6 as
+strictly as the app does — none of them claims the model knows anything.
+
+**Accuracy.** Every probability, expected-goals figure, scoreline and kick-off
+time is pulled from the live database via `worker/data/screenshot_data.json` —
+the same Dixon–Coles/Elo output the app renders. Guideline 2.3.3 requires
+screenshots to reflect the app in use.
+
+Two things on these are illustrative rather than measured, because no 2026/27
+match has been played yet, and both are marked as such in the script:
+
+- the completed-gameweek scores on 04 (the *scoring* is real —
+  `score_prediction()`: 5 exact, 2 outcome, 0)
+- the crowd row on 08
+
+**Regenerate after any UI change.** These are renders of the real screens, not
+device captures, so they drift silently if the design moves.
 
 ---
 
