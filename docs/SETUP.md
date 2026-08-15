@@ -65,17 +65,32 @@ free tier permits commercial use.
 
 ### B2. Apply the database migrations (~5 min)
 
-Supabase dashboard → **SQL Editor** → paste and **Run** each file **in order**:
+**First time:** Supabase dashboard → **SQL Editor** → paste the whole of
+`supabase/combined_setup.sql` → **Run**.
 
-```
-supabase/migrations/0001_init.sql
-supabase/migrations/0002_rls.sql
-supabase/migrations/0003_views.sql
-supabase/migrations/0004_settlement.sql
-supabase/migrations/0005_multi_season.sql
-```
+That file is every migration concatenated, wrapped in one transaction, so a
+failure anywhere applies nothing rather than leaving you with half a schema.
+It is generated — regenerate it with `python supabase/build_combined.py`
+whenever a migration is added, and `pytest worker/tests/test_combined_setup.py`
+fails if you forget.
 
-Each should report success. If one errors, stop — later files depend on it.
+> This step used to list the files by hand and stopped at `0005`, so anyone
+> following it got a database with no crowd views, no confidence labels, and —
+> worst — without `0008`, whose column grant is the only thing that lets a
+> prediction be saved at all. Hence the generated file.
+
+**Already have a database?** Run only the migrations you have not applied yet,
+in order, from `supabase/migrations/`. Applying one twice is safe for most of
+them but not all, so check rather than re-running everything:
+
+```sql
+-- Which of the newer ones are already in?
+select
+  to_regclass('public.crowd_vs_model')            is not null as has_0006,
+  exists (select 1 from information_schema.columns
+          where table_name = 'user_predictions'
+            and column_name = 'is_call_of_the_week')          as has_0009;
+```
 
 ### B3. ⚠️ Lock down the exposed schemas (~1 min — do not skip)
 
@@ -191,6 +206,90 @@ QR code — scan it on your iPhone to install.
 rebuild** — they hot-reload. Only native dependency or `app.json` changes need
 a new build. Every native module you need is already installed, so this should
 be a rare event.
+
+---
+
+## Group D — make premium actually unlock (~15 min)
+
+**Read this if you have bought the subscription in sandbox and the score matrix
+is still locked.** That is not a paywall bug. It is this group not being done.
+
+The chain that unlocks premium *data* has four links, and the app is only the
+first one:
+
+```
+purchase  →  RevenueCat  →  webhook  →  public.users.entitlement = 'premium'
+                                              ↓
+                            public.is_entitled() returns true
+                                              ↓
+                    predictions_premium returns rows instead of NOTHING
+```
+
+§9.2 [HARD] is why it works this way: premium data is **absent** from the
+response for an unentitled user, not hidden in the UI. So until
+`public.users.entitlement` flips, the heatmap has no data to draw and correctly
+shows the paywall — no matter what StoreKit or RevenueCat think.
+
+### D1. Deploy the two Edge Functions (~5 min)
+
+```powershell
+npx supabase@latest login
+npx supabase@latest link --project-ref wqrpvvrbgaotcozdyvoi
+npx supabase@latest functions deploy revenuecat-webhook
+npx supabase@latest functions deploy sync-entitlement
+```
+
+### D2. Set their secrets (~5 min)
+
+Invent any long random string for the webhook secret — it just has to match on
+both sides.
+
+```powershell
+npx supabase@latest secrets set REVENUECAT_WEBHOOK_SECRET="<a long random string you invent>"
+npx supabase@latest secrets set REVENUECAT_SECRET_KEY="<RevenueCat -> API keys -> Secret key, starts sk_>"
+```
+
+⚠️ The **secret** key (`sk_…`) is not the public SDK key (`appl_…`) that is in
+`eas.json`. The secret key can read and modify your RevenueCat account. It goes
+here and nowhere else — never in `.env`, never in the app, never in chat.
+
+### D3. Point RevenueCat at the webhook (~3 min)
+
+RevenueCat → your project → **Integrations → Webhooks → + New**
+
+| Field | Value |
+|---|---|
+| URL | `https://wqrpvvrbgaotcozdyvoi.supabase.co/functions/v1/revenuecat-webhook` |
+| Authorization header | `Bearer <the same random string from D2>` |
+| Environment | **Sandbox and Production** — sandbox is how you test |
+
+### D4. Check the entitlement, not just the offering (~2 min)
+
+Two different things in RevenueCat share the name you chose:
+
+- the **Offering** `premium` — which products the paywall displays
+- the **Entitlement** `premium` — what a purchase grants
+
+The app checks the **Entitlement**, and its identifier must be exactly
+`premium` (it is matched against `PREMIUM_ENTITLEMENT` in
+`app/src/core/entitlements.ts`). Confirm under **Entitlements** that `premium`
+exists and that **both** products are attached to it. An Offering with no
+Entitlement sells fine and unlocks nothing.
+
+### D5. Test it
+
+Buy with a sandbox Apple ID. The app calls `sync-entitlement` before dismissing
+the paywall, so premium should be live by the time you are back on the match
+screen — even if the webhook is slow. Then check in Supabase:
+
+```sql
+select entitlement, entitlement_expires_at from public.users where id = auth.uid();
+select event_type, entitlement, created_at from public.entitlement_events
+order by created_at desc limit 5;
+```
+
+`MANUAL_SYNC` rows are `sync-entitlement`; the rest are the webhook. Seeing
+only `MANUAL_SYNC` means D3 is wrong and the webhook is not arriving.
 
 ---
 

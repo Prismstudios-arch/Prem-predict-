@@ -16,9 +16,20 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'rea
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { hasBackend } from '@/api/client';
+import {
+  CrowdLockedNotice,
+  CrowdTooSmallNotice,
+  CrowdVsModelCard,
+} from '@/components/CrowdVsModel';
 import { LockIcon } from '@/components/Icons';
 import { ProbabilityBar } from '@/components/ProbabilityBar';
 import { PredictionInput, type UserPrediction } from '@/components/PredictionInput';
+import {
+  fetchCrowdForFixture,
+  MIN_CROWD_SAMPLE,
+  type CrowdVsModel,
+} from '@/core/crowd';
 import { usePredictionStore } from '@/core/predictionStore';
 import { ScoreMatrix, TopScorelines } from '@/components/ScoreMatrix';
 import { TeamMark } from '@/components/TeamMark';
@@ -175,8 +186,72 @@ export default function MatchDetailScreen() {
         <View style={{ height: 1, backgroundColor: colors.border }} />
 
         <PredictionInput home={home} away={away} locked={locked} onSubmit={onSubmit} />
+
+        <CrowdSection fixture={fixture} />
       </ScrollView>
     </>
+  );
+}
+
+/**
+ * Crowd vs model (0006_crowd.sql).
+ *
+ * This was fully built — migration, views, privacy floor, formatting module,
+ * three UI states — and mounted nowhere. Every piece existed and no screen
+ * imported any of it, so the app's one genuinely uncopyable feature shipped
+ * invisible. That is a worse failure than not having built it, because nothing
+ * about the codebase looked incomplete.
+ *
+ * The three states are all real and all reachable:
+ *   before kickoff  → locked notice (§6 of 0006: nobody follows the crowd)
+ *   after kickoff, thin sample → the privacy floor, explained
+ *   after kickoff, enough data → the comparison
+ */
+function CrowdSection({ fixture }: { fixture: Fixture }) {
+  const { colors } = useTheme();
+  const type = useType();
+  const [row, setRow] = useState<CrowdVsModel | null | undefined>(undefined);
+
+  const kickedOff = Date.now() >= new Date(fixture.kickoff_utc).getTime();
+
+  useEffect(() => {
+    if (!kickedOff || !hasBackend()) {
+      setRow(null);
+      return;
+    }
+    let cancelled = false;
+    void fetchCrowdForFixture(fixture.id)
+      .then((r) => {
+        if (!cancelled) setRow(r);
+      })
+      .catch((error) => {
+        // A missing crowd row is not an error state worth a retry button —
+        // it is the normal case for most of the season's first weekend.
+        console.warn('crowd fetch failed', error);
+        if (!cancelled) setRow(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [fixture.id, kickedOff]);
+
+  if (!kickedOff) return <CrowdLockedNotice />;
+  if (row === undefined) {
+    return (
+      <View style={{ paddingVertical: space.lg }}>
+        <ActivityIndicator color={colors.accent} />
+      </View>
+    );
+  }
+  if (row === null) return <CrowdTooSmallNotice needed={MIN_CROWD_SAMPLE} />;
+
+  return (
+    <View style={{ gap: space.sm }}>
+      <Text style={[type.micro, { color: colors.textTertiary }]}>
+        WHAT EVERYONE ELSE RECKONED
+      </Text>
+      <CrowdVsModelCard row={row} />
+    </View>
   );
 }
 

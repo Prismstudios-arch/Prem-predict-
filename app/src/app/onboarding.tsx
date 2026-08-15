@@ -223,7 +223,11 @@ function HowStep({ onContinue }: { onContinue: () => void }) {
     <>
       <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.xl }}>
         <Text style={[type.display, { color: colors.textPrimary }]} accessibilityRole="header">
-          You against the model
+          What do you reckon?
+        </Text>
+        <Text style={[type.body, { color: colors.textSecondary }]}>
+          A statistical model calls all ten matches. So do you. Every Monday
+          you find out who was closer.
         </Text>
         <View style={{ gap: space.lg }}>
           {points.map(([when, what]) => (
@@ -314,7 +318,7 @@ function DoneStep({ club, onContinue }: { club: string | null; onContinue: () =>
         </Text>
         <Text style={[type.body, { color: colors.textSecondary }]}>
           {club
-            ? 'Ten matches waiting. Make your calls.'
+            ? "Ten matches, and the model has already called them. What do you reckon?"
             : 'Ten matches waiting. Pick a club any time in Settings.'}
         </Text>
       </View>

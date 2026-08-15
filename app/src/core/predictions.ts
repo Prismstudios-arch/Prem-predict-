@@ -97,11 +97,50 @@ function interpret(code: string | undefined, message: string): Failure {
 export async function fetchMyPredictions(fixtureIds: string[]) {
   const { data, error } = await supabase()
     .from('user_predictions')
-    .select('fixture_id, outcome, home_goals, away_goals, points_awarded, settled_at')
+    .select(
+      'fixture_id, outcome, home_goals, away_goals, points_awarded, settled_at, is_call_of_the_week',
+    )
     .in('fixture_id', fixtureIds);
 
   if (error) throw new Error(`fetchMyPredictions failed: ${error.message}`);
   return data ?? [];
+}
+
+/**
+ * Move the double-points pick (0009_call_of_the_week.sql).
+ *
+ * "One per gameweek" is enforced by a database trigger, not here — the client
+ * sets the flag on one row and the trigger clears the others. Doing it in two
+ * client writes would leave a window with two doublers, and a crash between
+ * them would leave it there permanently.
+ */
+export async function setCallOfTheWeek(fixtureId: string): Promise<SubmitResult> {
+  const client = supabase();
+  const { data: session } = await client.auth.getSession();
+  const userId = session.session?.user.id;
+  if (!userId) {
+    return { ok: false, reason: 'auth', message: 'Sign in to make predictions.' };
+  }
+
+  const { error } = await client
+    .from('user_predictions')
+    .update({ is_call_of_the_week: true })
+    .eq('user_id', userId)
+    .eq('fixture_id', fixtureId);
+
+  if (!error) return { ok: true };
+
+  // 55000 is raised by the trigger when the existing call is on a match that
+  // has already kicked off. Moving it then would be a free re-roll, so it is
+  // refused — and the user needs to be told why, not shown a retry button.
+  if (error.code === '55000') {
+    return {
+      ok: false,
+      reason: 'locked',
+      message: 'Your call of the week has already kicked off. It stays where it is.',
+    };
+  }
+  return { ok: false, ...interpret(error.code, error.message) };
 }
 
 export type GameweekResult = {

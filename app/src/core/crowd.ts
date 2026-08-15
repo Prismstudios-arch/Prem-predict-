@@ -19,8 +19,18 @@ import { z } from 'zod';
 
 import { supabase } from '@/api/client';
 
-const Outcome = z.enum(['home', 'draw', 'away']);
-export type Outcome = z.infer<typeof Outcome>;
+const OutcomeSchema = z.enum(['home', 'draw', 'away']);
+export type Outcome = z.infer<typeof OutcomeSchema>;
+
+/**
+ * Mirrors public.min_crowd_sample() in 0006_crowd.sql.
+ *
+ * Duplicated deliberately, and only for copy: the database is what enforces
+ * the floor — it will not return a row below it — and this constant exists so
+ * the "needs at least N predictions" message can name a number without a round
+ * trip. If the two ever disagree the message is wrong, never the privacy rule.
+ */
+export const MIN_CROWD_SAMPLE = 10;
 
 export const CrowdVsModelSchema = z.object({
   fixture_id: z.string(),
@@ -42,9 +52,9 @@ export const CrowdVsModelSchema = z.object({
   model_draw: z.coerce.number(),
   model_away: z.coerce.number(),
   disagreement: z.coerce.number(),
-  crowd_pick: Outcome,
-  model_pick: Outcome,
-  actual_outcome: Outcome.nullable(),
+  crowd_pick: OutcomeSchema,
+  model_pick: OutcomeSchema,
+  actual_outcome: OutcomeSchema.nullable(),
 });
 
 export type CrowdVsModel = z.infer<typeof CrowdVsModelSchema>;

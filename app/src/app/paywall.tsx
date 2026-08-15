@@ -36,6 +36,7 @@ import {
   getOffering,
   purchase,
   restorePurchases,
+  syncEntitlementWithServer,
 } from '@/core/entitlements';
 import {
   MIN_TOUCH_TARGET,
@@ -77,25 +78,46 @@ export default function PaywallScreen() {
     })();
   }, []);
 
+  /**
+   * Dismissing the paywall the instant StoreKit returns is too early.
+   *
+   * What unlocks premium *data* is public.users.entitlement, written by the
+   * RevenueCat webhook — and a user sent straight back to a match screen in the
+   * seconds before that lands sees the same locked heatmap they just paid to
+   * open. So both paths ask the server to verify before returning, and only
+   * then dismiss.
+   */
+  const settle = useCallback(async () => {
+    await syncEntitlementWithServer();
+    setBusy(false);
+    router.back();
+  }, [router]);
+
   const onPurchase = useCallback(async () => {
     const pkg = packages?.find((p) => p.identifier === selected);
     if (!pkg) return;
     setBusy(true);
     setNotice(null);
     const outcome = await purchase(pkg);
+    if (outcome.status === 'purchased') {
+      await settle();
+      return;
+    }
     setBusy(false);
-    if (outcome.status === 'purchased') router.back();
-    else if (outcome.status === 'failed') setNotice(outcome.message);
-  }, [packages, selected, router]);
+    if (outcome.status === 'failed') setNotice(outcome.message);
+  }, [packages, selected, settle]);
 
   const onRestore = useCallback(async () => {
     setBusy(true);
     setNotice(null);
     const outcome = await restorePurchases();
+    if (outcome.status === 'purchased') {
+      await settle();
+      return;
+    }
     setBusy(false);
-    if (outcome.status === 'purchased') router.back();
-    else setNotice("We couldn't find a previous purchase on this Apple ID.");
-  }, [router]);
+    setNotice("We couldn't find a previous purchase on this Apple ID.");
+  }, [settle]);
 
   return (
     <ScrollView
@@ -106,8 +128,8 @@ export default function PaywallScreen() {
           See the model's full working
         </Text>
         <Text style={[type.body, { color: colors.textSecondary }]}>
-          You already play every gameweek for free. Premium shows you the
-          numbers behind every pick.
+          You already say what you reckon every gameweek, for free. Premium
+          shows you the numbers behind what the model reckons.
         </Text>
       </View>
 

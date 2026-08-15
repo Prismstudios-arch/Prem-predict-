@@ -24,7 +24,11 @@
 import { create } from 'zustand';
 
 import { hasBackend } from '@/api/client';
-import { fetchMyPredictions, submitPrediction } from '@/core/predictions';
+import {
+  fetchMyPredictions,
+  setCallOfTheWeek,
+  submitPrediction,
+} from '@/core/predictions';
 
 export type UserPick = {
   fixtureId: string;
@@ -34,6 +38,8 @@ export type UserPick = {
   pointsAwarded: number | null;
   /** True while a write is in flight, so the UI can show it is saving. */
   pending: boolean;
+  /** Scores double (0009). At most one of these is true at a time. */
+  isCallOfTheWeek: boolean;
 };
 
 type State = {
@@ -48,7 +54,9 @@ type State = {
     homeGoals: number,
     awayGoals: number,
   ) => Promise<{ ok: boolean; message?: string }>;
+  chooseCallOfTheWeek: (fixtureId: string) => Promise<{ ok: boolean; message?: string }>;
   pickFor: (fixtureId: string) => UserPick | undefined;
+  callOfTheWeek: (fixtureIds: string[]) => string | undefined;
   countSubmitted: (fixtureIds: string[]) => number;
   clearError: () => void;
 };
@@ -73,6 +81,7 @@ export const usePredictionStore = create<State>((set, get) => ({
           awayGoals: row.away_goals,
           pointsAwarded: row.points_awarded ?? null,
           pending: false,
+          isCallOfTheWeek: row.is_call_of_the_week ?? false,
         };
       }
       set({ picks, loaded: true });
@@ -97,6 +106,7 @@ export const usePredictionStore = create<State>((set, get) => ({
           awayGoals,
           pointsAwarded: previous?.pointsAwarded ?? null,
           pending: true,
+          isCallOfTheWeek: previous?.isCallOfTheWeek ?? false,
         },
       },
       lastError: null,
@@ -125,8 +135,43 @@ export const usePredictionStore = create<State>((set, get) => ({
     return { ok: false, message: result.message };
   },
 
+  /**
+   * Move the double-points pick.
+   *
+   * The optimistic update clears every other flag locally, because that is
+   * exactly what the database trigger is about to do. Setting only the new one
+   * would render two doublers for the length of the round trip, on the single
+   * screen where the rule "one per gameweek" has to be obvious.
+   */
+  async chooseCallOfTheWeek(fixtureId) {
+    const before = get().picks;
+    if (!before[fixtureId]) {
+      // Nothing to flag yet — the row has to exist before it can be marked.
+      return { ok: false, message: 'Make this prediction first.' };
+    }
+
+    set((s) => {
+      const picks: Record<string, UserPick> = {};
+      for (const [id, pick] of Object.entries(s.picks)) {
+        picks[id] = { ...pick, isCallOfTheWeek: id === fixtureId };
+      }
+      return { picks, lastError: null };
+    });
+
+    const result = await setCallOfTheWeek(fixtureId);
+    if (result.ok) return { ok: true };
+
+    set({ picks: before, lastError: result.message });
+    return { ok: false, message: result.message };
+  },
+
   pickFor(fixtureId) {
     return get().picks[fixtureId];
+  },
+
+  callOfTheWeek(fixtureIds) {
+    const { picks } = get();
+    return fixtureIds.find((id) => picks[id]?.isCallOfTheWeek);
   },
 
   countSubmitted(fixtureIds) {

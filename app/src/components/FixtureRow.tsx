@@ -23,6 +23,7 @@ import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { ProbabilityBar } from './ProbabilityBar';
+import { usePredictionStore } from '@/core/predictionStore';
 import { TeamMark } from './TeamMark';
 import type { Fixture } from '@/data/repository';
 import { formatKickoff } from '@/data/repository';
@@ -50,6 +51,13 @@ function FixtureRowImpl({ fixture, onPress }: Props) {
   const markSize = scaled(26);
   const finished = fixture.home_goals !== null && fixture.away_goals !== null;
 
+  // The double-points pick has to be visible from the list. Buried one screen
+  // deep it is a rule people forget they used, and forgetting it is what makes
+  // the mechanic feel arbitrary on Monday instead of like a decision they made.
+  const isCallOfTheWeek = usePredictionStore(
+    (s) => s.picks[fixture.id]?.isCallOfTheWeek ?? false,
+  );
+
   // Free tier sees the shape; premium sees the numbers.
   const split = prediction
     ? { h: prediction.p_home, d: prediction.p_draw, a: prediction.p_away }
@@ -60,6 +68,7 @@ function FixtureRowImpl({ fixture, onPress }: Props) {
     finished
       ? `Final score ${fixture.home_goals} ${fixture.away_goals}`
       : formatKickoff(fixture.kickoff_utc),
+    isCallOfTheWeek ? 'Your call of the week. This one scores double.' : '',
     prediction
       ? `Model: ${home.name} ${Math.round(prediction.p_home * 100)} percent, ` +
         `draw ${Math.round(prediction.p_draw * 100)} percent, ` +
@@ -70,7 +79,9 @@ function FixtureRowImpl({ fixture, onPress }: Props) {
           `${free.confidence_band} confidence, ${free.confidence_reason}. ` +
           'Full percentages are a premium feature.'
         : 'No model prediction yet',
-  ].join('. ');
+  ]
+    .filter(Boolean)
+    .join('. ');
 
   return (
     <Pressable
@@ -93,8 +104,13 @@ function FixtureRowImpl({ fixture, onPress }: Props) {
         <Text style={[type.micro, tabularNumbers, { color: colors.textTertiary }]}>
           {finished ? 'FULL TIME' : formatKickoff(fixture.kickoff_utc).toUpperCase()}
         </Text>
-        {free?.data_regime === 'prior_heavy' && !finished && (
-          <Text style={[type.micro, { color: colors.textTertiary }]}>EARLY SEASON</Text>
+        {isCallOfTheWeek ? (
+          <Text style={[type.micro, { color: colors.accent, fontWeight: '700' }]}>
+            YOUR CALL · ×2
+          </Text>
+        ) : (
+          free?.data_regime === 'prior_heavy' &&
+          !finished && <Text style={[type.micro, { color: colors.textTertiary }]}>EARLY SEASON</Text>
         )}
       </View>
 

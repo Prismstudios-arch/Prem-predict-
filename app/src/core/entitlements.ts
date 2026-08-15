@@ -102,3 +102,41 @@ export async function restorePurchases(): Promise<PurchaseOutcome> {
     return { status: 'failed', message: "Couldn't restore purchases." };
   }
 }
+
+/**
+ * Ask the server to re-read this user's entitlement from RevenueCat.
+ *
+ * A successful purchase updates StoreKit and RevenueCat immediately, but the
+ * thing that actually unlocks premium *data* is public.users.entitlement, and
+ * only the webhook writes that. Between the two there is a window — seconds
+ * normally, forever if the webhook is misconfigured — where the user has paid
+ * and the API still returns zero premium rows. That window is where "I bought
+ * it and nothing happened" reviews come from.
+ *
+ * So after any purchase or restore, ask the server to check. It reads
+ * RevenueCat over a secret key from an Edge Function and derives the user id
+ * from the JWT, so this call cannot assert entitlement — only trigger a
+ * verification (§9.2 [HARD] intact).
+ *
+ * Failure is deliberately quiet. The webhook is still the primary path and
+ * will land; surfacing an error here would alarm a user whose purchase is fine.
+ */
+export async function syncEntitlementWithServer(): Promise<boolean> {
+  try {
+    const { supabase, hasBackend } = await import('@/api/client');
+    if (!hasBackend()) return false;
+
+    const { data, error } = await supabase().functions.invoke<{ entitlement?: string }>(
+      'sync-entitlement',
+      { body: {} },
+    );
+    if (error) {
+      console.warn('entitlement sync failed', error);
+      return false;
+    }
+    return data?.entitlement === 'premium';
+  } catch (error) {
+    console.warn('entitlement sync threw', error);
+    return false;
+  }
+}

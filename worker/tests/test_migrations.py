@@ -103,11 +103,99 @@ def test_prediction_lock_uses_server_time():
 
 def test_client_cannot_write_server_owned_columns():
     """Column-level grants are what make §9.2 real. A client that could write
-    points_awarded or entitlement could award itself either one."""
-    rls = re.sub(
-        r"\s+", " ", (MIGRATIONS_DIR / "0002_rls.sql").read_text(encoding="utf-8").lower()
+    points_awarded or entitlement could award itself either one.
+
+    Checked across EVERY migration, not just 0002. A later migration that adds
+    a column and re-issues the grant is exactly how a server-owned field gets
+    handed to the client by accident — 0009 re-grants user_predictions to add
+    is_call_of_the_week, and nothing but this test stops the next one from
+    sweeping points_awarded in with it.
+    """
+    server_owned = (
+        "points_awarded",
+        "settled_at",
+        "submitted_at_server",
+        "entitlement",
+        "entitlement_expires_at",
+        "total_points",
+        "streak_current",
+        "streak_best",
     )
-    assert "grant insert (user_id, fixture_id, outcome, home_goals, away_goals)" in rls
-    assert "grant update (outcome, home_goals, away_goals)" in rls
-    # entitlement / total_points / streaks are absent from every grant list.
-    assert "grant update (display_name, favourite_team_id, notification_prefs)" in rls
+    # Every column list attached to a GRANT INSERT/UPDATE, anywhere.
+    grant_lists = re.findall(
+        r"grant\s+(?:insert|update)\s*\(([^)]*)\)",
+        "\n".join(p.read_text(encoding="utf-8") for p in MIGRATIONS).lower(),
+    )
+    assert grant_lists, "no column-level grants found at all"
+
+    for columns in grant_lists:
+        granted = {c.strip() for c in columns.split(",")}
+        leaked = granted.intersection(server_owned)
+        assert not leaked, f"server-owned column(s) granted to a client role: {leaked}"
+
+
+def test_no_gambling_vocabulary_in_schema():
+    """§2 [HARD]. Identifiers leak into API responses and error messages, so a
+    column called `banker` puts gambling vocabulary in front of a reviewer even
+    though no screen ever renders it. The double-points pick is deliberately
+    named call_of_the_week for this reason.
+
+    Comments are stripped first. 0009 explains at length why it is *not* called
+    a banker, and a check that cannot tell the identifier from the reasoning
+    would forbid documenting the rule.
+    """
+    combined = "\n".join(p.read_text(encoding="utf-8") for p in MIGRATIONS)
+    without_block = re.sub(r"/\*.*?\*/", " ", combined, flags=re.DOTALL)
+    code_only = re.sub(r"--[^\n]*", " ", without_block).lower()
+
+    for word in ("banker", "accumulator", "acca", "wager", "punt"):
+        assert word not in code_only, f"gambling vocabulary in schema: {word!r}"
+
+
+def test_call_of_the_week_doubles_in_settlement():
+    """The double has to be applied server-side, from a column the client
+    cannot forge — same reasoning as points_awarded itself."""
+    sql = re.sub(
+        r"\s+",
+        " ",
+        (MIGRATIONS_DIR / "0009_call_of_the_week.sql").read_text(encoding="utf-8").lower(),
+    )
+    assert "case when up.is_call_of_the_week then 2 else 1 end" in sql
+    assert "public.score_prediction(" in sql
+
+
+def test_model_also_gets_a_call_of_the_week():
+    """Give the user a doubler the model does not get and the user wins every
+    week by construction, which destroys the comparison the product is about."""
+    sql = re.sub(
+        r"\s+",
+        " ",
+        (MIGRATIONS_DIR / "0009_call_of_the_week.sql").read_text(encoding="utf-8").lower(),
+    )
+    assert "v_model_call" in sql
+    assert "case when p.fixture_id = v_model_call then 2 else 1 end" in sql
+    # Deterministic tie-break, or a re-run can produce a different total.
+    assert "order by p.confidence desc, p.fixture_id" in sql
+
+
+def test_call_of_the_week_cannot_move_off_a_kicked_off_match():
+    """Otherwise: flag your safest pick, watch it finish 0-0, slide the doubler
+    onto something still to play. A free re-roll every week."""
+    sql = re.sub(
+        r"\s+",
+        " ",
+        (MIGRATIONS_DIR / "0009_call_of_the_week.sql").read_text(encoding="utf-8").lower(),
+    )
+    assert "not public.fixture_is_open(up.fixture_id)" in sql
+    assert "call of the week is locked for this gameweek" in sql
+
+
+def test_exact_score_count_survives_doubling():
+    """A doubled exact scoreline is worth 10, not 5. Counting `= 5` alone would
+    silently stop counting the most impressive result in the game."""
+    sql = re.sub(
+        r"\s+",
+        " ",
+        (MIGRATIONS_DIR / "0009_call_of_the_week.sql").read_text(encoding="utf-8").lower(),
+    )
+    assert "filter (where up.points_awarded in (5, 10))" in sql

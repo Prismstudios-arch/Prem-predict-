@@ -305,6 +305,8 @@ function PredictCard({
         )}
       </View>
 
+      <CallOfTheWeekToggle fixture={fixture} enabled={Boolean(existing)} />
+
       {/* The model's view, for context. Free tier sees only the shape. */}
       {fixture.prediction && (
         <View style={{ gap: space.sm }}>
@@ -319,6 +321,80 @@ function PredictCard({
           />
         </View>
       )}
+    </View>
+  );
+}
+
+/**
+ * The double-points pick (0009_call_of_the_week.sql).
+ *
+ * Deliberately not called a banker — §2 [HARD] keeps gambling vocabulary out of
+ * the product entirely, and "what do you reckon" is the register this app
+ * speaks in anyway.
+ *
+ * One per gameweek, and the database is what enforces that: this only ever
+ * asks for the flag to move. It also cannot be un-set — picking a different
+ * match is how you change your mind, which keeps the rule to a single sentence
+ * and means there is no state where you have spent the double on nothing.
+ */
+function CallOfTheWeekToggle({ fixture, enabled }: { fixture: Fixture; enabled: boolean }) {
+  const { colors } = useTheme();
+  const type = useType();
+  const isCall = usePredictionStore((s) => s.picks[fixture.id]?.isCallOfTheWeek ?? false);
+  const choose = usePredictionStore((s) => s.chooseCallOfTheWeek);
+  const [error, setError] = useState<string | null>(null);
+
+  const onPress = useCallback(async () => {
+    if (isCall) return;
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+    const result = await choose(fixture.id);
+    setError(result.ok ? null : (result.message ?? null));
+  }, [choose, fixture.id, isCall]);
+
+  return (
+    <View style={{ gap: space.xs }}>
+      <Pressable
+        onPress={() => void onPress()}
+        disabled={!enabled || isCall}
+        accessibilityRole="button"
+        accessibilityState={{ selected: isCall, disabled: !enabled }}
+        accessibilityLabel={
+          isCall
+            ? 'This is your call of the week. It scores double.'
+            : enabled
+              ? 'Make this your call of the week. It scores double, and only one match per gameweek can have it.'
+              : 'Make a prediction first, then you can make it your call of the week.'
+        }
+        style={({ pressed }) => ({
+          minHeight: MIN_TOUCH_TARGET,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: space.sm,
+          paddingHorizontal: space.lg,
+          borderRadius: radius.pill,
+          borderWidth: 1,
+          borderColor: isCall ? colors.accent : colors.border,
+          backgroundColor: isCall
+            ? colors.accent
+            : pressed
+              ? colors.surfaceRaised
+              : 'transparent',
+          opacity: enabled ? 1 : 0.4,
+        })}
+      >
+        <Text
+          style={[
+            type.callout,
+            { fontWeight: '700', color: isCall ? colors.accentInk : colors.textPrimary },
+          ]}
+        >
+          {isCall ? 'Call of the week · ×2' : 'Make this my call of the week'}
+        </Text>
+      </Pressable>
+      <Text style={[type.caption, { color: error ? colors.negative : colors.textTertiary, textAlign: 'center' }]}>
+        {error ?? 'One match a week counts double. The model gets one too.'}
+      </Text>
     </View>
   );
 }

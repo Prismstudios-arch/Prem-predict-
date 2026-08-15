@@ -82,11 +82,25 @@ def wrap(draw, text: str, f, max_w: int) -> list[str]:
 
 
 def canvas(caption: str, sub: str | None = None) -> tuple[Image.Image, int]:
-    """Caption block on top, returns the canvas and where the screen starts."""
+    """Caption block on top, returns the canvas and where the screen starts.
+
+    Every screenshot carries the same kicker above its headline. "What do you
+    reckon?" is the sentence the app is named after and the one that explains
+    it faster than any feature list — it is the question shouted across a pub
+    before kick-off, and the product is a way of settling it.
+
+    Running it on all ten rather than one turns the set into a campaign instead
+    of ten unrelated captions, and it means the line is present whichever
+    three Apple happens to show on the install sheet.
+    """
     img = Image.new("RGB", (W, H), BASE)
     d = ImageDraw.Draw(img)
 
-    y = 150
+    y = 132
+    f_kick = font(BLACK, 34)
+    d.text((100, y), "WHAT DO YOU RECKON?", font=f_kick, fill=ACCENT)
+    y += 74
+
     f_cap = font(BLACK, 92)
     for line in wrap(d, caption, f_cap, W - 200):
         d.text((100, y), line, font=f_cap, fill=TEXT)
@@ -294,16 +308,16 @@ def s2_gameweek(fxs: list[dict]) -> Image.Image:
     # the sixth was clipped 62px in - through its probability bar, which reads
     # as a broken render rather than as a list that scrolls.
     for fx in fxs[:6]:
-        d.rounded_rectangle([70, y, W - 70, y + 302], radius=40, fill=SURFACE, outline=BORDER, width=2)
+        d.rounded_rectangle([70, y, W - 70, y + 288], radius=40, fill=SURFACE, outline=BORDER, width=2)
         d.text((120, y + 30), kickoff(fx["kickoff_utc"]), font=font(BOLD, 26), fill=TEXT3)
-        team_mark(img, 120, y + 76, 58, fx["hp"], fx["hsec"], fx["hs"])
-        team_mark(img, 120, y + 148, 58, fx["ap"], fx["asec"], fx["aa"])
-        d.text((204, y + 84), short_label(fx["hn"]), font=font(BOLD, 38), fill=TEXT)
-        d.text((204, y + 156), short_label(fx["an"]), font=font(BOLD, 38), fill=TEXT2)
-        prob_bar(d, 120, y + 234, W - 240, 18, fx["p_home"], fx["p_draw"], fx["p_away"])
-        d.text((120, y + 262), f"{round(fx['p_home']*100)} · {round(fx['p_draw']*100)} · {round(fx['p_away']*100)}",
+        team_mark(img, 120, y + 70, 58, fx["hp"], fx["hsec"], fx["hs"])
+        team_mark(img, 120, y + 142, 58, fx["ap"], fx["asec"], fx["aa"])
+        d.text((204, y + 78), short_label(fx["hn"]), font=font(BOLD, 38), fill=TEXT)
+        d.text((204, y + 150), short_label(fx["an"]), font=font(BOLD, 38), fill=TEXT2)
+        prob_bar(d, 120, y + 222, W - 240, 18, fx["p_home"], fx["p_draw"], fx["p_away"])
+        d.text((120, y + 250), f"{round(fx['p_home']*100)} · {round(fx['p_draw']*100)} · {round(fx['p_away']*100)}",
                font=font(BOLD, 28), fill=TEXT2)
-        y += 330
+        y += 312
     return img
 
 

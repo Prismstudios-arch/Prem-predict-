@@ -34,7 +34,19 @@ Conflating them is the most common ASO mistake.
 |---|---|---|---|
 | **Home screen** | `Reckon` | ~12 chars before iOS truncates | `app.json` → `expo.name` |
 | **App Store listing** | `Reckon: Football Predictions` | 30 chars (28 used) | App Store Connect |
-| **Subtitle** | `You vs the model. Every gameweek.` | 30 chars | App Store Connect |
+| **Subtitle** | `What do you reckon?` | 30 chars (19 used) | App Store Connect |
+| **Promotional text** | `The model has called all ten. What do you reckon?` | 170 chars | App Store Connect |
+
+⚠️ The previous subtitle, `You vs the model. Every gameweek.`, was **33
+characters** and App Store Connect would have rejected it at save. Count before
+pasting; the field does not warn, it refuses.
+
+**Why the subtitle is the tagline and not a feature list.** The subtitle sits
+directly under the name in search results and on the product page, and it is
+indexed. `What do you reckon?` is the sentence the app is named after — it
+explains "Reckon" instantly to someone who has never heard of it, which a
+brand-name-only listing cannot do. It is also the line running as a kicker on
+all ten screenshots, so the listing reads as one piece.
 
 The home-screen name must stay short. iOS truncates at roughly 12 characters,
 so `Reckon: Football Predictions` would render as `Reckon: Foo…` under the icon
@@ -56,6 +68,8 @@ called "Football Prediction & Tips" and sit in exactly that bucket.
 
 ## Description
 
+> What do you reckon?
+>
 > A statistical model predicts every match in the English top flight. You
 > predict too. Every gameweek you find out who was smarter.
 >
@@ -64,6 +78,11 @@ called "Football Prediction & Tips" and sit in exactly that bucket.
 > probabilities, expected goals, and the most likely scorelines. You make your
 > own calls before kick-off. Predictions lock when the whistle goes. Monday
 > morning, you find out how you did.
+>
+> **YOUR CALL OF THE WEEK**
+> One match a gameweek counts double. Pick it before kick-off and you cannot
+> move it once that match starts. The model gets one too — its most confident
+> fixture — so the comparison stays fair.
 >
 > **A MODEL THAT SHOWS ITS WORKING**
 > Most prediction apps tell you who will win. This one tells you how confident
@@ -212,6 +231,10 @@ gives you, what a week looks like, and what you actually do.
 | 08 | Crowd vs model | You, the model, everyone else. |
 | 09 | Club picker (§7.4 marks) | Pick your club. |
 | 10 | No-gambling statement | No odds. No betting. Ever. |
+
+All ten carry **WHAT DO YOU RECKON?** as an accent kicker above the headline.
+Running it on every shot rather than one makes the set read as a campaign, and
+guarantees the line appears whichever three Apple picks for the install sheet.
 
 Overlay text states the benefit, not the feature. Captions follow §5.6 as
 strictly as the app does — none of them claims the model knows anything.

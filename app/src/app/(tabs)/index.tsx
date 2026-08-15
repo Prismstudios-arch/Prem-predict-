@@ -7,12 +7,12 @@
  * rewriting its layout.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   Pressable,
   RefreshControl,
+  SectionList,
   Text,
   View,
 } from 'react-native';
@@ -25,9 +25,14 @@ import {
   isMisconfigured,
   isUsingSampleData,
   loadGameweek,
+  type Fixture,
   type Gameweek,
 } from '@/data/repository';
+import { groupByDay } from '@/data/schedule';
 import { radius, space, tabularNumbers, useTheme, useType } from '@/theme';
+
+/** Stable identity, so the sections memo does not recompute on every render. */
+const EMPTY: Fixture[] = [];
 
 type State =
   | { status: 'loading' }
@@ -51,6 +56,11 @@ export default function GameweekScreen() {
       ? state.data.fixtures.filter((f) => picks[f.id]).length
       : 0;
 
+  // Above the early returns: hooks cannot be called conditionally, and the
+  // loading and error branches below both return before this point in the JSX.
+  const fixtures = state.status === 'ready' ? state.data.fixtures : EMPTY;
+  const sections = useMemo(() => groupByDay(fixtures), [fixtures]);
+
   const load = useCallback(async () => {
     try {
       const data = await loadGameweek(1);
@@ -66,7 +76,9 @@ export default function GameweekScreen() {
         message: "Couldn't load this gameweek.",
       });
     }
-  }, []);
+    // loadPicks is a Zustand action, so its identity is stable for the life of
+    // the store — listing it satisfies the linter without re-creating `load`.
+  }, [loadPicks]);
 
   useEffect(() => {
     void load();
@@ -131,10 +143,14 @@ export default function GameweekScreen() {
   const { data } = state;
 
   return (
-    <FlatList
-      data={data.fixtures}
+    <SectionList
+      sections={sections}
       keyExtractor={(f) => f.id}
       renderItem={({ item }) => <FixtureRow fixture={item} onPress={openMatch} />}
+      renderSectionHeader={({ section }) => <DayHeader title={section.title} />}
+      // Days are a grouping, not a sticky navigation aid; pinning them steals
+      // vertical space on a screen that is already dense.
+      stickySectionHeadersEnabled={false}
       contentContainerStyle={{
         padding: space.lg,
         // The tab group hides the native header, so the screen owns its own
@@ -163,6 +179,8 @@ export default function GameweekScreen() {
               {data.fixtures.length} matches · {submitted} predicted
             </Text>
           </View>
+
+          <WhatDoYouReckon predicted={submitted} total={data.fixtures.length} />
 
           {/* The entry point to the §6.1 prediction flow. Without this the
               pager existed as a route nothing could reach, and predicting
@@ -214,6 +232,57 @@ export default function GameweekScreen() {
         </View>
       }
     />
+  );
+}
+
+function DayHeader({ title }: { title: string }) {
+  const { colors } = useTheme();
+  const type = useType();
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: space.md,
+        paddingTop: space.lg,
+        paddingBottom: space.xs,
+      }}
+      accessibilityRole="header"
+    >
+      <Text style={[type.micro, { color: colors.textTertiary, letterSpacing: 1 }]}>{title}</Text>
+      <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+    </View>
+  );
+}
+
+/**
+ * The line the whole product is named after.
+ *
+ * "Reckon" only means anything to someone who has heard the question, and
+ * "what do you reckon?" is the exact sentence this app replaces — the one
+ * shouted across a pub before kick-off. It earns its place at the top of the
+ * home screen because it explains the app faster than any feature list, and it
+ * changes as the week progresses so it never becomes furniture people stop
+ * seeing.
+ */
+function WhatDoYouReckon({ predicted, total }: { predicted: number; total: number }) {
+  const { colors } = useTheme();
+  const type = useType();
+
+  const line =
+    predicted === 0
+      ? 'The model has called all ten. What do you reckon?'
+      : predicted < total
+        ? `${total - predicted} to go. What do you reckon?`
+        : "All ten in. Now we find out who's right.";
+
+  return (
+    <Text
+      accessibilityRole="text"
+      style={[type.body, { color: colors.accent, fontWeight: '700' }]}
+    >
+      {line}
+    </Text>
   );
 }
 
