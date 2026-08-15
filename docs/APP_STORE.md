@@ -84,7 +84,7 @@ called "Football Prediction & Tips" and sit in exactly that bucket.
 > teams to score, clean sheets. Complete accuracy history and reliability
 > charts.
 >
-> Monthly £2.49 · Annual £14.99 with a 7-day free trial. Subscriptions renew
+> Monthly £2.49 · Annual £14.99 with a 14-day free trial. Subscriptions renew
 > automatically unless cancelled at least 24 hours before the period ends.
 > Payment is charged to your Apple ID. Manage or cancel in your Apple ID
 > settings.

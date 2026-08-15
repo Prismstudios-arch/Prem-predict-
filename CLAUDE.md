@@ -330,10 +330,12 @@ The split is deliberate: free users get enough to play the game every week and s
 | SKU | Price | Notes |
 |---|---|---|
 | Monthly | £2.49 | |
-| Annual | £14.99 | 7-day free trial. Headline as "£1.25/month" |
+| Annual | £14.99 | **14-day** free trial (see note). Headline as "£1.25/month" |
 | Season Pass (non-consumable) | £24.99 | One-off. Converts price-resistant users beautifully |
 
 Push annual hard — football is a 10-month product and annual matches the season shape. Run the trial so it converts after they've experienced two gameweeks.
+
+**Trial length — changed to 14 days.** This table originally said 7, which contradicted the sentence above it: gameweeks are weekly, so a 7-day trial covers *one*. The user would predict once, never reach the "You 6 — Model 4" moment the trial exists to sell, and then be asked to pay. 14 days delivers the two gameweeks the rationale actually calls for.
 
 ### 8.3 Paywall rules
 

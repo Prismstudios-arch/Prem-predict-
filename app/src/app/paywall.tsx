@@ -174,14 +174,14 @@ export default function PaywallScreen() {
           <ActivityIndicator color={colors.textPrimary} />
         ) : (
           <Text style={[type.body, { fontWeight: '700', color: colors.accentInk }]}>
-            Start 7-day free trial
+            Start 14-day free trial
           </Text>
         )}
       </Pressable>
 
       {/* §8.3 [HARD]: terms before purchase, above the fold, not collapsed. */}
       <Text style={[type.caption, { color: colors.textSecondary, lineHeight: 18 }]}>
-        Your 7-day free trial converts to a paid subscription unless cancelled
+        Your 14-day free trial converts to a paid subscription unless cancelled
         at least 24 hours before it ends. Payment is charged to your Apple ID at
         confirmation. The subscription renews automatically at the same price
         and period unless you turn off auto-renew at least 24 hours before the

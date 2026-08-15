@@ -7,29 +7,38 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "ios": { "resourceClass": "m-medium" },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
       "env": {
-        "EXPO_PUBLIC_ENV": "development"
+        "EXPO_PUBLIC_ENV": "development",
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_bGcVmSgAPjiwiLrOkokHMOclsQX"
       }
     },
     "preview": {
       "distribution": "internal",
-      "ios": { "resourceClass": "m-medium" },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
       "env": {
         "EXPO_PUBLIC_ENV": "preview",
         "EXPO_PUBLIC_SUPABASE_URL": "https://wqrpvvrbgaotcozdyvoi.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_AFVpaOScywg3EZZqGDy-1Q_0oNvTd0f",
-        "EXPO_PUBLIC_SITE_URL": "https://reckon.jonnywilsonnn2012.workers.dev"
+        "EXPO_PUBLIC_SITE_URL": "https://reckon.jonnywilsonnn2012.workers.dev",
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_bGcVmSgAPjiwiLrOkokHMOclsQX"
       }
     },
     "production": {
       "autoIncrement": true,
-      "ios": { "resourceClass": "m-medium" },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
       "env": {
         "EXPO_PUBLIC_ENV": "production",
         "EXPO_PUBLIC_SUPABASE_URL": "https://wqrpvvrbgaotcozdyvoi.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_AFVpaOScywg3EZZqGDy-1Q_0oNvTd0f",
-        "EXPO_PUBLIC_SITE_URL": "https://reckon.jonnywilsonnn2012.workers.dev"
+        "EXPO_PUBLIC_SITE_URL": "https://reckon.jonnywilsonnn2012.workers.dev",
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_bGcVmSgAPjiwiLrOkokHMOclsQX"
       }
     }
   },
