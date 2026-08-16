@@ -11,7 +11,8 @@
     "test": "vitest run",
     "fixtures": "tsx scripts/print-fixtures.ts",
     "verify-account": "tsx scripts/verify-account-path.ts",
-    "check-bundle-secrets": "tsx scripts/check-bundle-secrets.ts"
+    "check-bundle-secrets": "tsx scripts/check-bundle-secrets.ts",
+    "legal": "tsx scripts/generate-legal-html.ts"
   },
   "dependencies": {
     "@sentry/react-native": "~7.2.0",

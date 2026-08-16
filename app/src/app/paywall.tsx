@@ -23,7 +23,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Linking,
   Pressable,
   ScrollView,
   Text,
@@ -46,7 +45,7 @@ import {
   useTheme,
   useType,
 } from '@/theme';
-import { PRIVACY_URL, TERMS_URL } from '@/core/links';
+import { PRIVACY_ROUTE, TERMS_ROUTE } from '@/core/links';
 
 const PREMIUM_FEATURES = [
   'Full probability breakdown, not just the pick',
@@ -211,8 +210,8 @@ export default function PaywallScreen() {
       </Text>
 
       <View style={{ flexDirection: 'row', justifyContent: 'center', gap: space.lg }}>
-        <LinkButton label="Terms" onPress={() => void Linking.openURL(TERMS_URL)} />
-        <LinkButton label="Privacy Policy" onPress={() => void Linking.openURL(PRIVACY_URL)} />
+        <LinkButton label="Terms" onPress={() => router.push(TERMS_ROUTE)} />
+        <LinkButton label="Privacy Policy" onPress={() => router.push(PRIVACY_ROUTE)} />
         {/* §8.3 [HARD]: missing this is a guaranteed rejection. */}
         <LinkButton label="Restore Purchases" onPress={onRestore} />
       </View>

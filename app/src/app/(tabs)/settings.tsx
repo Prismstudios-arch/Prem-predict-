@@ -33,7 +33,7 @@ import {
   useTheme,
   useType,
 } from '@/theme';
-import { MANAGE_SUBSCRIPTION_URL, PRIVACY_URL, TERMS_URL } from '@/core/links';
+import { MANAGE_SUBSCRIPTION_URL, PRIVACY_ROUTE, TERMS_ROUTE } from '@/core/links';
 
 /** iOS build number, set by EAS autoIncrement rather than by hand. */
 const buildNumber = Constants.expoConfig?.ios?.buildNumber ?? null;
@@ -180,8 +180,8 @@ export default function SettingsScreen() {
 
       {/* ---- legal --------------------------------------------------------- */}
       <Section title="Legal">
-        <Action label="Privacy policy" onPress={() => void Linking.openURL(PRIVACY_URL)} />
-        <Action label="Terms of use" onPress={() => void Linking.openURL(TERMS_URL)} />
+        <Action label="Privacy policy" onPress={() => router.push(PRIVACY_ROUTE)} />
+        <Action label="Terms of use" onPress={() => router.push(TERMS_ROUTE)} />
       </Section>
 
       {/* ---- about (§2 [HARD] disclaimer) ---------------------------------- */}
