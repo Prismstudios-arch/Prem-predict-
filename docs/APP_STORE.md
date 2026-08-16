@@ -118,8 +118,8 @@ automatically unless cancelled at least 24 hours before the period ends.
 Payment is charged to your Apple ID. Manage or cancel in your Apple ID
 settings.
 
-Terms: https://reckon.jonnywilsonnn2012.workers.dev/terms
-Privacy: https://reckon.jonnywilsonnn2012.workers.dev/privacy
+Terms: https://reckon.reckonapp.workers.dev/terms
+Privacy: https://reckon.reckonapp.workers.dev/privacy
 
 Not affiliated with, endorsed by, or connected to the Premier League, the
 Football Association, or any football club. Predictions are statistical
