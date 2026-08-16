@@ -13,12 +13,17 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ChevronIcon } from '@/components/Icons';
 import { hasBackend } from '@/api/client';
 import { currentAccount, deleteAccount, type AccountState } from '@/core/auth';
-import { restorePurchases } from '@/core/entitlements';
+import {
+  getCustomerInfo,
+  isPremium,
+  restorePurchases,
+} from '@/core/entitlements';
 import {
   MIN_TOUCH_TARGET,
   radius,
@@ -37,6 +42,8 @@ export default function SettingsScreen() {
   const [account, setAccount] = useState<AccountState | null>(null);
   const [prefs, setPrefs] = useState({ gwOpen: true, lockSoon: true, weeklyWrap: true });
   const [busy, setBusy] = useState(false);
+  const [premium, setPremium] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!hasBackend()) return;
@@ -45,9 +52,19 @@ export default function SettingsScreen() {
       .catch(() => setAccount(null));
   }, []);
 
+  // Refreshed on focus, not just on mount: the tab stays alive, so someone who
+  // subscribes and comes straight back here would otherwise still be looking at
+  // "Get Premium" seconds after paying for it.
+  useFocusEffect(
+    useCallback(() => {
+      void getCustomerInfo().then((info) => setPremium(isPremium(info)));
+    }, []),
+  );
+
   const onRestore = useCallback(async () => {
     setBusy(true);
     const outcome = await restorePurchases();
+    setPremium(isPremium(outcome.status === 'purchased' ? outcome.info : null));
     setBusy(false);
     Alert.alert(
       outcome.status === 'purchased' ? 'Purchases restored' : 'Nothing to restore',
@@ -131,6 +148,24 @@ export default function SettingsScreen() {
 
       {/* ---- subscription -------------------------------------------------- */}
       <Section title="Subscription">
+        {/*
+          The paywall had exactly one way in: tapping a locked probability on a
+          match screen (§8.3's contextual soft paywall). That is the right place
+          to *convert* someone, but it is a terrible place to be the only door —
+          anyone who has already decided to subscribe, or who dismissed it once
+          and changed their mind, has nowhere to go. Settings is where people
+          look for it, so it is here too.
+        */}
+        {premium ? (
+          <Row label="Premium" value="Active" />
+        ) : (
+          <Action
+            label="Get Premium"
+            hint="Full probabilities, the scoreline heatmap, accuracy history"
+            emphasised
+            onPress={() => router.push('/paywall')}
+          />
+        )}
         {/* §8.3 [HARD]: its absence is a guaranteed rejection. */}
         <Action label="Restore purchases" onPress={onRestore} disabled={busy} />
         <Action
@@ -273,12 +308,17 @@ function Toggle({
 
 function Action({
   label,
+  hint,
   onPress,
   disabled,
+  emphasised,
 }: {
   label: string;
+  hint?: string;
   onPress: () => void;
   disabled?: boolean;
+  /** The one accented row in a list of grey ones. §7.1: never decorative. */
+  emphasised?: boolean;
 }) {
   const { colors } = useTheme();
   const type = useType();
@@ -287,7 +327,7 @@ function Action({
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={hint ? `${label}. ${hint}` : label}
       accessibilityState={{ disabled: Boolean(disabled) }}
       style={({ pressed }) => ({
         minHeight: MIN_TOUCH_TARGET,
@@ -296,12 +336,28 @@ function Action({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        gap: space.md,
         backgroundColor: pressed ? colors.surfaceRaised : 'transparent',
         opacity: disabled ? 0.5 : 1,
       })}
     >
-      <Text style={[type.body, { color: colors.textPrimary }]}>{label}</Text>
-      <ChevronIcon size={18} color={colors.textTertiary} />
+      <View style={{ flex: 1, gap: space.xxs }}>
+        <Text
+          style={[
+            type.body,
+            {
+              color: emphasised ? colors.accent : colors.textPrimary,
+              fontWeight: emphasised ? '700' : '400',
+            },
+          ]}
+        >
+          {label}
+        </Text>
+        {hint && (
+          <Text style={[type.caption, { color: colors.textTertiary }]}>{hint}</Text>
+        )}
+      </View>
+      <ChevronIcon size={18} color={emphasised ? colors.accent : colors.textTertiary} />
     </Pressable>
   );
 }

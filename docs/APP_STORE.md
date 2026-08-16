@@ -68,54 +68,63 @@ called "Football Prediction & Tips" and sit in exactly that bucket.
 
 ## Description
 
-> What do you reckon?
->
-> A statistical model predicts every match in the English top flight. You
-> predict too. Every gameweek you find out who was smarter.
->
-> **HOW IT WORKS**
-> Tuesday, the model publishes its predictions for all ten matches — full
-> probabilities, expected goals, and the most likely scorelines. You make your
-> own calls before kick-off. Predictions lock when the whistle goes. Monday
-> morning, you find out how you did.
->
-> **YOUR CALL OF THE WEEK**
-> One match a gameweek counts double. Pick it before kick-off and you cannot
-> move it once that match starts. The model gets one too — its most confident
-> fixture — so the comparison stays fair.
->
-> **A MODEL THAT SHOWS ITS WORKING**
-> Most prediction apps tell you who will win. This one tells you how confident
-> it is, and then publishes whether it was right. Every gameweek. Including the
-> bad ones.
->
-> The model is a Dixon-Coles bivariate Poisson fitted on fifteen years of
-> results, blended with an independent rating system. In the first weeks of a
-> season it says so, and widens its uncertainty, because it has barely any
-> current data to go on.
->
-> **FREE FOREVER**
-> Predict every match. See the model's pick and confidence. Track your score
-> against it. Global leaderboard.
->
-> **PREMIUM**
-> Full probability breakdowns. The scoreline heatmap. Expected goals, both
-> teams to score, clean sheets. Complete accuracy history and reliability
-> charts.
->
-> Monthly £2.49 · Annual £14.99 with a 14-day free trial. Subscriptions renew
-> automatically unless cancelled at least 24 hours before the period ends.
-> Payment is charged to your Apple ID. Manage or cancel in your Apple ID
-> settings.
->
-> Terms: https://reckon.jonnywilsonnn2012.workers.dev/terms
-> Privacy: https://reckon.jonnywilsonnn2012.workers.dev/privacy
->
-> Not affiliated with, endorsed by, or connected to the Premier League, the
-> Football Association, or any football club. Predictions are statistical
-> estimates, not advice, and should not be used for betting purposes.
+**Paste the block below verbatim.** It is fenced, not quoted, so copying it
+gives you exactly what should appear in App Store Connect.
 
----
+> The previous version of this section was a markdown blockquote. Copying it
+> carried the `> ` prefixes into the live listing - the field is plain text and
+> renders them literally, so the description began "> A statistical model...".
+> Markdown bold is stripped for the same reason: `**HOW IT WORKS**` would show
+> the asterisks.
+
+```
+What do you reckon?
+
+A statistical model predicts every match in the English top flight. You
+predict too. Every gameweek you find out who was smarter.
+
+HOW IT WORKS
+Tuesday, the model publishes its predictions for all ten matches — full
+probabilities, expected goals, and the most likely scorelines. You make your
+own calls before kick-off. Predictions lock when the whistle goes. Monday
+morning, you find out how you did.
+
+YOUR CALL OF THE WEEK
+One match a gameweek counts double. Pick it before kick-off and you cannot
+move it once that match starts. The model gets one too — its most confident
+fixture — so the comparison stays fair.
+
+A MODEL THAT SHOWS ITS WORKING
+Most prediction apps tell you who will win. This one tells you how confident
+it is, and then publishes whether it was right. Every gameweek. Including the
+bad ones.
+
+The model is a Dixon-Coles bivariate Poisson fitted on fifteen years of
+results, blended with an independent rating system. In the first weeks of a
+season it says so, and widens its uncertainty, because it has barely any
+current data to go on.
+
+FREE FOREVER
+Predict every match. See the model's pick and confidence. Track your score
+against it. Global leaderboard.
+
+PREMIUM
+Full probability breakdowns. The scoreline heatmap. Expected goals, both
+teams to score, clean sheets. Complete accuracy history and reliability
+charts.
+
+Monthly £2.49 · Annual £14.99 with a 14-day free trial. Subscriptions renew
+automatically unless cancelled at least 24 hours before the period ends.
+Payment is charged to your Apple ID. Manage or cancel in your Apple ID
+settings.
+
+Terms: https://reckon.jonnywilsonnn2012.workers.dev/terms
+Privacy: https://reckon.jonnywilsonnn2012.workers.dev/privacy
+
+Not affiliated with, endorsed by, or connected to the Premier League, the
+Football Association, or any football club. Predictions are statistical
+estimates, not advice, and should not be used for betting purposes.
+```
 
 ## Keywords (100 chars)
 
@@ -145,34 +154,38 @@ Expected rating: **4+**.
 
 ## Reviewer notes
 
-> This app is a prediction *game*, not a betting or tipster app.
->
-> - No wagering of any kind, real or virtual. No currency, coins, tokens or
->   stakes.
-> - No bookmaker odds are displayed anywhere in the app.
-> - No links to any gambling service. No affiliate relationships.
-> - Users predict scorelines and earn points. Points have no monetary value and
->   cannot be exchanged for anything.
-> - The subscription unlocks statistical detail (probability breakdowns,
->   expected goals, accuracy history). It does not unlock anything wagering-related.
->
-> Bookmaker closing odds are used **server-side only**, as a calibration
-> benchmark to measure the model's accuracy. They are never sent to the client
-> and never rendered. This is why the app can honestly claim its accuracy is
-> measured against a market baseline while displaying no odds.
->
-> Demo account: <fill in before submitting>
-> The account has predictions already submitted so the results screen is
-> populated.
->
-> Note: the app creates an anonymous account on first launch, so a reviewer can
-> use every feature without signing in. Sign in with Apple is offered but never
-> required.
->
-> Contact: reckon2026@outlook.com
->
-> Restore Purchases is on the paywall and in Settings. Account deletion is in
-> Settings.
+Same rule as the description: paste the fenced block, not a quote.
+
+```
+This app is a prediction game, not a betting or tipster app.
+
+- No wagering of any kind, real or virtual. No currency, coins, tokens or
+  stakes.
+- No bookmaker odds are displayed anywhere in the app.
+- No links to any gambling service. No affiliate relationships.
+- Users predict scorelines and earn points. Points have no monetary value and
+  cannot be exchanged for anything.
+- The subscription unlocks statistical detail (probability breakdowns,
+  expected goals, accuracy history). It does not unlock anything wagering-related.
+
+Bookmaker closing odds are used server-side only, as a calibration
+benchmark to measure the model's accuracy. They are never sent to the client
+and never rendered. This is why the app can honestly claim its accuracy is
+measured against a market baseline while displaying no odds.
+
+Demo account: <fill in before submitting>
+The account has predictions already submitted so the results screen is
+populated.
+
+Note: the app creates an anonymous account on first launch, so a reviewer can
+use every feature without signing in. Sign in with Apple is offered but never
+required.
+
+Contact: reckon2026@outlook.com
+
+Restore Purchases is on the paywall and in Settings. Account deletion is in
+Settings.
+```
 
 ---
 

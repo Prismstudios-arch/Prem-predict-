@@ -26,7 +26,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, SectionList, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TeamMark } from '@/components/TeamMark';
@@ -84,9 +84,24 @@ export default function ResultsScreen() {
     }
   }, [loadPicks]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  /**
+   * Reload every time the tab is focused, not once on mount.
+   *
+   * Expo Router keeps tab screens mounted after their first visit, so a plain
+   * useEffect runs exactly once for the life of the app. Open Results before
+   * predicting anything, and it caches "you haven't called it yet" — then you
+   * make ten predictions, switch back, and it is still showing the answer from
+   * before you started. Nothing looks broken enough to try pull-to-refresh,
+   * because the screen is rendering a legitimate state; just not the current one.
+   *
+   * This is the payoff screen. It is the one place where showing stale state
+   * costs the most, because the whole point is finding out what happened.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      void load();
+    }, [load]),
+  );
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
