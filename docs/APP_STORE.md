@@ -191,83 +191,49 @@ Settings.
 
 ## Privacy labels
 
-Minimum collection (§9.3) — you need a user id, a display name and predictions.
+§9.3 [HARD] requires these to be **accurate**. Over-declaring is as wrong as
+under-declaring, and it also makes the nutrition label on your product page
+look worse than the app actually is.
 
-| Data | Collected | Linked to user | Tracking | Purpose |
+### Answer "Yes, we collect data from this app"
+
+Two categories, and only two, because of what is actually wired up:
+
+| Apple category | Data type | Linked to user | Used for tracking | Purpose |
 |---|---|---|---|---|
-| User ID | Yes | Yes | No | App functionality |
-| Purchases | Yes | Yes | No | App functionality |
-| Product interaction | Yes | No | No | Analytics |
-| Crash data | Yes | No | No | App functionality |
-| **Email** | **No** | — | — | not collected |
-| **Name** | **No** | — | — | display names are auto-generated |
-| **Location** | **No** | — | — | — |
-| **IDFA / advertising** | **No** | — | — | no ATT prompt needed |
+| **Identifiers** | User ID | **Yes** | No | App Functionality |
+| **Purchases** | Purchase History | **Yes** | No | App Functionality |
+
+- **User ID** — an anonymous Supabase account id created on first launch. It is
+  what your predictions, points and streak hang off. Linked, because it is by
+  definition tied to the account.
+- **Purchase History** — RevenueCat, a third-party partner, receives the
+  purchase and the same user id. Apple counts a third-party SDK's collection as
+  yours, so it is declared here.
+
+Everything else is **No**: no email, no name, no phone, no address, no location,
+no contacts, no photos, no browsing history, no search history, no advertising
+identifier, no sensitive data.
 
 Display names are generated ("Quiet Chevron 41"), so no user-supplied personal
-data is stored (§15 #4 — this also keeps the leaderboard out of Guideline 1.2
-UGC obligations).
+data is ever stored — which also keeps the leaderboard out of Guideline 1.2's
+UGC obligations (§15 #4). No IDFA means no ATT prompt.
 
----
+### ⚠️ Do NOT declare analytics or crash data
 
-## Screenshots
+An earlier version of this table listed *Product Interaction* and *Crash Data*,
+on the basis that §3.1 specifies PostHog and Sentry.
 
-Generated, not hand-made:
+Both packages are installed, and **neither one runs.** `initAnalytics()` and
+`initCrashReporting()` in `app/src/core/bootstrap.ts` return immediately when
+their key is absent, and `EXPO_PUBLIC_POSTHOG_KEY` and `EXPO_PUBLIC_SENTRY_DSN`
+are set in neither `.env` nor `eas.json`. Verified against the exported bundle:
+zero references. The shipping app transmits no analytics and no crash reports.
 
-```
-worker/.venv/Scripts/python.exe app/scripts/generate-screenshots.py
-```
-
-Writes ten shots at both sizes App Store Connect accepts:
-
-| Folder | Size | Slot |
-|---|---|---|
-| `app/assets/screenshots/6.9-inch/` | 1290 × 2796 | **required** — upload this set |
-| `app/assets/screenshots/6.5-inch/` | 1242 × 2688 | legacy, optional |
-
-Rendered natively at each size rather than up-scaled, because a resampled
-screenshot is visibly soft next to a native one at these dimensions.
-
-**Order is deliberate.** Apple shows only the first three on the install sheet
-without the user swiping, so those three carry the whole pitch: what the model
-gives you, what a week looks like, and what you actually do.
-
-| # | Screen | Caption |
-|---|---|---|
-| 01 | Match detail (§7.3 signature) | See how sure it is. |
-| 02 | Gameweek list | Ten matches. Every Tuesday. |
-| 03 | Prediction input | Call all ten in a minute. |
-| 04 | Results | Monday morning, you find out. |
-| 05 | Reliability chart | A model that admits it's guessing. |
-| 06 | Scorelines + marginals | Every scoreline, ranked. |
-| 07 | Confidence ranking | It tells you what it doesn't know. |
-| 08 | Crowd vs model | You, the model, everyone else. |
-| 09 | Club picker (§7.4 marks) | Pick your club. |
-| 10 | No-gambling statement | No odds. No betting. Ever. |
-
-All ten carry **WHAT DO YOU RECKON?** as an accent kicker above the headline.
-Running it on every shot rather than one makes the set read as a campaign, and
-guarantees the line appears whichever three Apple picks for the install sheet.
-
-Overlay text states the benefit, not the feature. Captions follow §5.6 as
-strictly as the app does — none of them claims the model knows anything.
-
-**Accuracy.** Every probability, expected-goals figure, scoreline and kick-off
-time is pulled from the live database via `worker/data/screenshot_data.json` —
-the same Dixon–Coles/Elo output the app renders. Guideline 2.3.3 requires
-screenshots to reflect the app in use.
-
-Two things on these are illustrative rather than measured, because no 2026/27
-match has been played yet, and both are marked as such in the script:
-
-- the completed-gameweek scores on 04 (the *scoring* is real —
-  `score_prediction()`: 5 exact, 2 outcome, 0)
-- the crowd row on 08
-
-**Regenerate after any UI change.** These are renders of the real screens, not
-device captures, so they drift silently if the design moves.
-
----
+**If you ever set either key, you must update these labels in the same release.**
+Turning on collection without amending the label is the exact thing Apple
+treats as a misrepresentation, and it is easy to do by accident because adding
+an EAS secret needs no code change.
 
 ## Pre-submission checklist
 

@@ -19,6 +19,20 @@ import { hasBackend, supabase } from '@/api/client';
 import { ensureSession } from '@/core/auth';
 import { configurePurchases } from '@/core/entitlements';
 
+/*
+ * ⚠️ SETTING EITHER OF THESE CHANGES THE APP STORE PRIVACY LABELS.
+ *
+ * Both are currently unset, so initCrashReporting() and initAnalytics() return
+ * immediately and the app transmits no analytics and no crash reports. The
+ * submitted privacy labels declare only User ID and Purchase History, which is
+ * accurate for that state (docs/APP_STORE.md).
+ *
+ * Adding either key needs no code change - an EAS secret is enough - so it is
+ * possible to begin collecting data without anything in this repo looking
+ * different. Apple treats collecting data the labels do not declare as a
+ * misrepresentation. If you set one of these, amend the labels in the same
+ * release.
+ */
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
 const POSTHOG_KEY = process.env.EXPO_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST ?? 'https://eu.i.posthog.com';
