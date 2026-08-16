@@ -61,7 +61,6 @@ const ORDER: Step[] = ['club', 'how', 'notifications', 'done'];
 
 export default function OnboardingScreen() {
   const { colors } = useTheme();
-  const type = useType();
   const router = useRouter();
 
   const [step, setStep] = useState<Step>('club');

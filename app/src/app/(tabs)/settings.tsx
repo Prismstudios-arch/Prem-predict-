@@ -13,6 +13,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -33,6 +34,9 @@ import {
   useType,
 } from '@/theme';
 import { MANAGE_SUBSCRIPTION_URL, PRIVACY_URL, TERMS_URL } from '@/core/links';
+
+/** iOS build number, set by EAS autoIncrement rather than by hand. */
+const buildNumber = Constants.expoConfig?.ios?.buildNumber ?? null;
 
 export default function SettingsScreen() {
   const { colors } = useTheme();
@@ -197,8 +201,15 @@ export default function SettingsScreen() {
           statistical estimates, not advice, and should not be used for betting
           purposes.
         </Text>
+        {/*
+          Read from the manifest, not typed in. The hardcoded "0.1.0" here was
+          already stale against app.json by the time anyone noticed, and a
+          version string that lies is worse than no version string when someone
+          is telling you which build their bug is on.
+        */}
         <Text style={[type.micro, tabularNumbers, { color: colors.textTertiary }]}>
-          VERSION 0.1.0
+          VERSION {Constants.expoConfig?.version ?? '—'}
+          {buildNumber ? ` (${buildNumber})` : ''}
         </Text>
       </View>
 

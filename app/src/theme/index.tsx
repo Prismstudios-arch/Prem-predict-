@@ -18,13 +18,14 @@
  */
 
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import {
-  useColorScheme,
-  useWindowDimensions,
-  type TextStyle,
-} from 'react-native';
+import { useWindowDimensions, type TextStyle } from 'react-native';
 
-import { lightPalette, palette, type as baseType, type Palette } from './tokens';
+// useColorScheme and lightPalette are deliberately not imported. app.json sets
+// userInterfaceStyle: "dark" and this provider forces the dark palette, so
+// following the device scheme here would produce a light UI inside an app iOS
+// has already committed to rendering dark. lightPalette stays in tokens.ts for
+// when light mode is actually built (§7.2 wants one eventually).
+import { palette, type as baseType, type Palette } from './tokens';
 
 export * from './tokens';
 

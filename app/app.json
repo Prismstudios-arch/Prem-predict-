@@ -3,7 +3,7 @@
     "name": "Reckon",
     "slug": "reckon-football",
     "scheme": "reckon",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,

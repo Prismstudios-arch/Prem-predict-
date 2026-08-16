@@ -220,12 +220,20 @@ function PredictCard({
   const [error, setError] = useState<string | null>(null);
 
   // Keep in step if the server load lands after first render.
+  //
+  // Depending on the two numbers rather than on `existing` is deliberate: the
+  // store replaces the whole pick object on every write, so depending on the
+  // object would re-run this after each keystroke and fight the user's input.
+  // Destructured first so the dependency array holds plain values the linter
+  // can check, instead of member expressions it has to give up on.
+  const existingHome = existing?.homeGoals;
+  const existingAway = existing?.awayGoals;
   useEffect(() => {
-    if (existing) {
-      setHome(existing.homeGoals);
-      setAway(existing.awayGoals);
+    if (existingHome !== undefined && existingAway !== undefined) {
+      setHome(existingHome);
+      setAway(existingAway);
     }
-  }, [existing?.homeGoals, existing?.awayGoals]);
+  }, [existingHome, existingAway]);
 
   const save = useCallback(
     async (h: number, a: number) => {

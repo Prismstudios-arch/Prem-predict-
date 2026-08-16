@@ -173,13 +173,16 @@ benchmark to measure the model's accuracy. They are never sent to the client
 and never rendered. This is why the app can honestly claim its accuracy is
 measured against a market baseline while displaying no odds.
 
-Demo account: <fill in before submitting>
-The account has predictions already submitted so the results screen is
-populated.
+Demo account: not required, and none is provided.
 
-Note: the app creates an anonymous account on first launch, so a reviewer can
-use every feature without signing in. Sign in with Apple is offered but never
-required.
+The app creates an anonymous account automatically on first launch, so the
+reviewer can use every feature - predicting, the call of the week, results,
+settings, account deletion - without signing in or being asked for anything.
+Sign in with Apple is offered but never required, and there is no email,
+password or registration step anywhere in the app.
+
+To review the subscription: it is reachable from Settings -> Get Premium, or by
+tapping any locked probability on a match screen.
 
 Contact: reckon2026@outlook.com
 
