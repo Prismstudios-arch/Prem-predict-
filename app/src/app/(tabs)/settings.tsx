@@ -17,6 +17,7 @@ import Constants from 'expo-constants';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AppleSignInButton } from '@/components/AppleSignIn';
 import { ChevronIcon } from '@/components/Icons';
 import { hasBackend } from '@/api/client';
 import { currentAccount, deleteAccount, type AccountState } from '@/core/auth';
@@ -121,10 +122,22 @@ export default function SettingsScreen() {
           value={account?.displayName ?? (account ? 'Anonymous' : 'Not signed in')}
         />
         {account?.isAnonymous && (
-          <Text style={[type.caption, { color: colors.textTertiary, paddingHorizontal: space.lg }]}>
-            You're playing anonymously. Sign in with Apple to keep your record if
-            you change phone.
-          </Text>
+          <View style={{ gap: space.md, paddingBottom: space.sm }}>
+            <Text
+              style={[type.caption, { color: colors.textTertiary, paddingHorizontal: space.lg }]}
+            >
+              You're playing anonymously. Sign in with Apple to keep your record
+              if you change phone.
+            </Text>
+            {/*
+              This sentence used to appear on its own, with nothing to tap.
+              Apple rejected 1.0 (5) under Guideline 2.1 for exactly that: the
+              app described Sign in with Apple in Settings, in the privacy
+              policy and in the terms, and linkAppleIdentity() was written and
+              never called from anywhere.
+            */}
+            <AppleSignInButton onSignedIn={setAccount} />
+          </View>
         )}
       </Section>
 

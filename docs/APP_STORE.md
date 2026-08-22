@@ -152,6 +152,36 @@ Expected rating: **4+**.
 
 ---
 
+## Rejection history
+
+### 1.0 (5) — Guideline 2.1, 21 August 2026
+
+> Specifically, we are unable to locate the Sign in with Apple feature.
+
+They were right. `linkAppleIdentity()` in `app/src/core/auth.ts` was fully
+written and exported, `expo-apple-authentication` was installed and its plugin
+configured — and **no screen called any of it**. Settings displayed a sentence
+telling the user to sign in with Apple with nothing to tap, and both the privacy
+policy and the terms named the feature. The app described something it did not
+have.
+
+Two things also had to be fixed before the button could work:
+
+- `ios.usesAppleSignIn` was missing from `app.json`, so the entitlement was not
+  in the binary and `signInAsync` would have thrown at runtime.
+- Supabase's Apple provider must be enabled with `com.reckonfootball.app` in
+  Client IDs, or `signInWithIdToken` returns "Unsupported provider".
+
+Fixed in 1.0 (6): a real `AppleAuthenticationButton` in **Settings → Account**
+and on the **final onboarding screen**, and `tests/wired-up.test.ts` now fails
+if any screen stops rendering it.
+
+Note this is the third time a finished feature shipped mounted to nothing —
+crowd-vs-model and the paywall entry were the other two. That test exists
+because none of them looked unfinished in review.
+
+---
+
 ## Reviewer notes
 
 Same rule as the description: paste the fenced block, not a quote.

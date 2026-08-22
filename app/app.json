@@ -16,6 +16,7 @@
     "ios": {
       "bundleIdentifier": "com.reckonfootball.app",
       "supportsTablet": false,
+      "usesAppleSignIn": true,
       "config": {
         "usesNonExemptEncryption": false
       },

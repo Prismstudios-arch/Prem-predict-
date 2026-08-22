@@ -27,6 +27,7 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import * as Notifications from 'expo-notifications';
 
+import { AppleSignInButton } from '@/components/AppleSignIn';
 import { TeamMark } from '@/components/TeamMark';
 import { loadTeams } from '@/data/repository';
 import {
@@ -320,6 +321,28 @@ function DoneStep({ club, onContinue }: { club: string | null; onContinue: () =>
             ? "Ten matches, and the model has already called them. What do you reckon?"
             : 'Ten matches waiting. Pick a club any time in Settings.'}
         </Text>
+
+        {/*
+          Optional, never required — §6.1 is explicit that nothing blocks a
+          first prediction. It is offered here as well as in Settings for two
+          reasons.
+
+          One: Apple could not find it at all in 1.0 (5), and the first screen
+          of the app is the least missable place there is.
+
+          Two: signing in *now* is strictly better for the user than signing in
+          later. §15 #5's collision rule discards anonymous predictions when the
+          Apple ID already has an account — and at this point none exist yet, so
+          there is nothing to lose. Offering it only in Settings meant the safe
+          moment to take it had already passed by the time anyone saw it.
+        */}
+        <View style={{ gap: space.sm, paddingTop: space.lg }}>
+          <Text style={[type.caption, { color: colors.textTertiary }]}>
+            Optional — keep your record if you change phone. You can do this
+            later in Settings.
+          </Text>
+          <AppleSignInButton onSignedIn={() => undefined} />
+        </View>
       </View>
       <Footer label="Make my predictions" onPress={onContinue} />
     </>
